@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#192331</color>
+    <color name="colorPrimaryDark">#101720</color>
+    <color name="colorAccent">#87c03f</color>
+    <color name="white">#fff</color>
+    <color name="gray">#ddd</color>
+
+    <array name="progressColors">
+        <item>@color/colorPrimary</item>
+        <item>@color/colorPrimary</item>
+        <item>@color/colorAccent</item>
+        <item>@color/colorAccent</item>
+    </array>
+</resources>

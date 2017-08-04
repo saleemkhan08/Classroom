@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "93698803320",
+    "firebase_url": "https://clsroom-d7fe3.firebaseio.com",
+    "project_id": "clsroom-d7fe3",
+    "storage_bucket": "clsroom-d7fe3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:93698803320:android:63cb2147baea9c0c",
+        "android_client_info": {
+          "package_name": "com.thnki.classroom"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "93698803320-qn1g5q0isareuak7b4betgunjk2bfcvp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.thnki.classroom",
+            "certificate_hash": "18af356f0fdb118ecb220a3bc2807581636b6db8"
+          }
+        },
+        {
+          "client_id": "93698803320-2td5dmoh3397b3m4bmhp4uv9pdnsvj8j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkLGNDZcDohzr9OvIwvnezVvsa1Dfnapo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "93698803320-2td5dmoh3397b3m4bmhp4uv9pdnsvj8j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

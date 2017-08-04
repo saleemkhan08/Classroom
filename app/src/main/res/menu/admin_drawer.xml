@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/admin_students"
+            android:icon="@mipmap/student"
+            android:title="@string/students"/>
+        <item
+            android:id="@+id/admin_staff"
+            android:icon="@mipmap/staff"
+            android:title="@string/staff"/>
+        <item
+            android:id="@+id/admin_courses"
+            android:icon="@mipmap/courses"
+            android:title="@string/courses"/>
+        <item
+            android:id="@+id/admin_leaves"
+            android:icon="@mipmap/calendar"
+            android:title="@string/leaves"/>
+        <item
+            android:id="@+id/admin_time_table"
+            android:icon="@mipmap/timetable"
+            android:title="@string/timetables"/>
+        <item
+            android:id="@+id/admin_results"
+            android:icon="@mipmap/results"
+            android:title="@string/results"/>
+    </group>
+
+    <item android:title="@string/accounts">
+        <menu>
+            <item
+                android:id="@+id/nav_notifications"
+                android:icon="@drawable/ic_notifications_black_48dp"
+                android:title="@string/notifications"/>
+            <item
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/ic_settings_black_48dp"
+                android:title="@string/action_settings"/>
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@mipmap/logout"
+                android:title="@string/logout"/>
+        </menu>
+    </item>
+
+</menu>
