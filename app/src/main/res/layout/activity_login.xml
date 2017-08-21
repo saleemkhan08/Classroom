@@ -32,50 +32,17 @@
         android:id="@+id/loginContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="50dp"
-        android:paddingLeft="20dp">
+        android:layout_margin="50dp"
+        >
 
-        <LinearLayout
-            android:id="@+id/credentialContainer"
+        <Button
+            android:id="@+id/loginDialog"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/fab"
-            android:weightSum="10">
+            android:text="@string/getStarted"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_height="wrap_content"/>
 
-            <EditText
-                android:id="@+id/userId"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:layout_weight="5"
-                android:background="@drawable/login_credentials_bg"
-                android:hint="@string/userId"
-                android:padding="10dp"
-                android:textColor="@color/colorPrimary"/>
-
-            <EditText
-                android:id="@+id/password"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="5"
-                android:background="@drawable/login_credentials_bg"
-                android:hint="@string/password"
-                android:inputType="textPassword"
-                android:padding="10dp"
-                android:textColor="@color/colorPrimary"/>
-        </LinearLayout>
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_margin="@dimen/fab_margin"
-            app:fabSize="mini"
-            app:srcCompat="@drawable/ic_arrow_forward_white_48dp"/>
     </RelativeLayout>
 
     <com.rd.PageIndicatorView

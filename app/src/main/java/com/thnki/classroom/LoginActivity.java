@@ -1,7 +1,6 @@
 package com.thnki.classroom;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -11,42 +10,57 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.squareup.otto.Subscribe;
 import com.thnki.classroom.adapters.LoginSectionsPagerAdapter;
-import com.thnki.classroom.utils.ConnectivityUtil;
+import com.thnki.classroom.dialogs.LoginDialogFragment;
+import com.thnki.classroom.listeners.OnDismissListener;
+import com.thnki.classroom.model.Progress;
+import com.thnki.classroom.model.Snack;
+import com.thnki.classroom.model.ToastMsg;
+import com.thnki.classroom.utils.Otto;
 
-public class LoginActivity extends AppCompatActivity implements OnCompleteListener<AuthResult>
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+import static com.thnki.classroom.dialogs.LoginDialogFragment.FIREBASE_USER_ID;
+
+public class LoginActivity extends AppCompatActivity implements OnDismissListener, OnCompleteListener<AuthResult>
 {
     public static final String LOGIN_STATUS = "loginStatus";
-    public static final String FIREBASE_USER_ID = "firebaseUserId";
     public static final String LOGIN_USER_ID = "loginUserId";
     private static final String TAG = "LoginActivity";
 
-    private EditText mUserIdEditText;
-    private EditText mPasswordEditText;
-    private FirebaseAuth mAuth;
     private ProgressDialog mProgressDialog;
-    private boolean mIsRunning;
+    public boolean mIsRunning;
+
+    @Bind(R.id.loginContainer)
+    View mLoginButtonContainer;
     private SharedPreferences mSharedPreferences;
-    private String mUserId;
+    private FirebaseAuth mAuth;
+    private LoginDialogFragment mFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        ButterKnife.bind(this);
 
+        mAuth = FirebaseAuth.getInstance();
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         LoginSectionsPagerAdapter sectionsPagerAdapter = new LoginSectionsPagerAdapter(getSupportFragmentManager());
 
@@ -58,32 +72,24 @@ public class LoginActivity extends AppCompatActivity implements OnCompleteListen
 
         if (mSharedPreferences.getBoolean(LOGIN_STATUS, false))
         {
-            launchMainActivity();
+            mLoginButtonContainer.setVisibility(View.GONE);
+            Log.d(TAG, "Launching MainActivity : through Handler");
+            new Handler().postDelayed(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    if (mIsRunning)
+                    {
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        finish();
+                    }
+                }
+            }, 1000);
         }
         else
         {
-            mAuth = FirebaseAuth.getInstance();
-            View credentialsContainer = findViewById(R.id.loginContainer);
-            credentialsContainer.setVisibility(View.VISIBLE);
-            mUserIdEditText = (EditText) findViewById(R.id.userId);
-            mPasswordEditText = (EditText) findViewById(R.id.password);
-            final View loginBtn = findViewById(R.id.fab);
-            loginBtn.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View button)
-                {
-                    closeTheKeyBoard();
-                    if (ConnectivityUtil.isConnected(LoginActivity.this))
-                    {
-                        login();
-                    }
-                    else
-                    {
-                        snack("No Internet ...");
-                    }
-                }
-            });
+            mLoginButtonContainer.setVisibility(View.VISIBLE);
         }
     }
 
@@ -91,6 +97,7 @@ public class LoginActivity extends AppCompatActivity implements OnCompleteListen
     protected void onStart()
     {
         super.onStart();
+        Otto.register(this);
         mIsRunning = true;
     }
 
@@ -99,43 +106,25 @@ public class LoginActivity extends AppCompatActivity implements OnCompleteListen
     {
         super.onStop();
         hideProgressDialog();
+        Otto.unregister(this);
         mIsRunning = false;
     }
 
-    private void closeTheKeyBoard()
+    @OnClick(R.id.loginDialog)
+    public void launchLoginDialog()
     {
-        View view = getCurrentFocus();
-        if (view != null)
-        {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
+        FragmentManager manager = getSupportFragmentManager();
+        mFragment = LoginDialogFragment.getInstance();
+        mFragment.setOnDismissListener(this);
+        mFragment.show(manager, LoginDialogFragment.TAG);
+        mLoginButtonContainer.setVisibility(View.GONE);
     }
 
-    private void login()
-    {
-        mUserId = mUserIdEditText.getText().toString().trim();
-        String password = mPasswordEditText.getText().toString().trim();
-        if (mUserId.length() < 5)
-        {
-            snack("Please Enter a valid user ID");
-        }
-        else if (password.length() < 6)
-        {
-            snack("Please Enter a valid password");
-        }
-        else
-        {
-            showProgressDialog("Signing in ...");
-            mAuth.signInWithEmailAndPassword(mUserId + "@clsroom.com", password)
-                    .addOnCompleteListener(this);
-        }
-    }
-
-    private void snack(String msg)
+    @Subscribe
+    public void snackBar(Snack snack)
     {
         Snackbar snackbar = Snackbar
-                .make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT);
+                .make(findViewById(android.R.id.content), snack.getMsg(), Snackbar.LENGTH_SHORT);
         Snackbar.SnackbarLayout layout = (Snackbar.SnackbarLayout) snackbar.getView();
 
         TextView textView = (TextView) layout.findViewById(android.support.design.R.id.snackbar_text);
@@ -149,43 +138,33 @@ public class LoginActivity extends AppCompatActivity implements OnCompleteListen
         snackbar.show();
     }
 
-    @Override
-    public void onComplete(@NonNull Task<AuthResult> task)
+    @Subscribe
+    public void toastMsg(ToastMsg toast)
     {
-        if (task.isSuccessful())
+        Toast.makeText(this, toast.getMsg(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Subscribe
+    public void progressDialog(Progress progress)
+    {
+        if (progress.toBeShown())
         {
-            if (mAuth.getCurrentUser() != null)
-            {
-                mSharedPreferences.edit()
-                        .putBoolean(LOGIN_STATUS, true)
-                        .putString(FIREBASE_USER_ID, mAuth.getCurrentUser().getUid())
-                        .putString(LOGIN_USER_ID, mUserId)
-                        .apply();
-                launchMainActivity();
-                return;
-            }
+            showProgressDialog(progress.getMsg());
         }
-        loginFailed();
+        else
+        {
+            hideProgressDialog();
+        }
     }
 
-    private void loginFailed()
-    {
-        mSharedPreferences.edit()
-                .putBoolean(LOGIN_STATUS, false)
-                .apply();
-        hideProgressDialog();
-        snack("Login Failed!");
-    }
-
-    private void showProgressDialog(String msg)
+    private void showProgressDialog(int msg)
     {
         Log.d(TAG, "showProgressDialog");
-
         if (mProgressDialog == null)
         {
             mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setCanceledOnTouchOutside(false);
-            mProgressDialog.setMessage(msg);
+            mProgressDialog.setMessage(getString(msg));
             mProgressDialog.setIndeterminate(true);
         }
         mProgressDialog.show();
@@ -198,6 +177,31 @@ public class LoginActivity extends AppCompatActivity implements OnCompleteListen
         {
             mProgressDialog.dismiss();
         }
+    }
+
+    @Override
+    public void onDismiss()
+    {
+        mLoginButtonContainer.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onComplete(@NonNull Task<AuthResult> task)
+    {
+        if (task.isSuccessful())
+        {
+            if (mAuth.getCurrentUser() != null)
+            {
+                mSharedPreferences.edit()
+                        .putBoolean(LOGIN_STATUS, true)
+                        .putString(FIREBASE_USER_ID, mAuth.getCurrentUser().getUid())
+                        .putString(LOGIN_USER_ID, mFragment.mUserId)
+                        .apply();
+                launchMainActivity();
+                return;
+            }
+        }
+        loginFailed();
     }
 
     private void launchMainActivity()
@@ -215,5 +219,14 @@ public class LoginActivity extends AppCompatActivity implements OnCompleteListen
                 }
             }
         }, 1000);
+    }
+
+    private void loginFailed()
+    {
+        mSharedPreferences.edit()
+                .putBoolean(LOGIN_STATUS, false)
+                .apply();
+        Progress.hide();
+        ToastMsg.show(R.string.loginFailed);
     }
 }

@@ -8,12 +8,15 @@ import com.squareup.otto.ThreadEnforcer;
 public class Otto
 {
     private static final Bus BUS = new Bus(ThreadEnforcer.ANY);
+
     public static void register(Object object)
     {
         try
         {
             BUS.register(object);
-        }catch (Exception e)
+            Log.d("Otto", "Registered : " + object);
+        }
+        catch (Exception e)
         {
             Log.d("Otto", e.getMessage());
         }
@@ -24,7 +27,9 @@ public class Otto
         try
         {
             BUS.unregister(object);
-        }catch (Exception e)
+            Log.d("Otto", "unRegistered : " + object);
+        }
+        catch (Exception e)
         {
             Log.d("Otto", e.getMessage());
         }
@@ -35,11 +40,15 @@ public class Otto
         try
         {
             BUS.post(object);
-        }catch (Exception e)
+            Log.d("Otto", "Posted : " + object);
+        }
+        catch (Exception e)
         {
             Log.d("Otto", e.getMessage());
         }
     }
 
-    private Otto(){}
+    private Otto()
+    {
+    }
 }

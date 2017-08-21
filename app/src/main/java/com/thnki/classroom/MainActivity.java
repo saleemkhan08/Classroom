@@ -1,17 +1,31 @@
 package com.thnki.classroom;
 
 import android.app.ProgressDialog;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.squareup.otto.Subscribe;
+import com.thnki.classroom.listeners.EventsListener;
+import com.thnki.classroom.model.Progress;
+import com.thnki.classroom.model.Snack;
+import com.thnki.classroom.model.ToastMsg;
+import com.thnki.classroom.utils.ActionBarUtil;
 import com.thnki.classroom.utils.NavigationDrawerUtil;
+import com.thnki.classroom.utils.Otto;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -19,14 +33,17 @@ public class MainActivity extends AppCompatActivity
 
     private ProgressDialog mProgressDialog;
     private NavigationDrawerUtil mNavigationDrawerUtil;
+    private Toolbar mToolbar;
+    private ActionBarUtil mActionBarUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        setSupportActionBar(mToolbar);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
             View view = getWindow().getDecorView();
@@ -37,41 +54,122 @@ public class MainActivity extends AppCompatActivity
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         mNavigationDrawerUtil = new NavigationDrawerUtil(this);
     }
 
     @Override
+    protected void onStart()
+    {
+        super.onStart();
+        Otto.register(this);
+    }
+
+    @Override
     public void onBackPressed()
     {
-        if (mNavigationDrawerUtil.isDrawerOpen())
-        {
-            mNavigationDrawerUtil.closeDrawer();
-        }
-        else
+        if (mNavigationDrawerUtil.onBackPressed())
         {
             super.onBackPressed();
         }
     }
 
     @Override
+    protected void onStop()
+    {
+        super.onStop();
+        mActionBarUtil.unRegisterOtto();
+        Otto.unregister(this);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        getMenuInflater().inflate(R.menu.main, menu);
+        mActionBarUtil = new ActionBarUtil(this, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        int id = item.getItemId();
-        if (id == R.id.action_settings)
-        {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        Otto.post(item.getItemId());
+        return true;
     }
+
+    public void updateEventsListener(EventsListener listener)
+    {
+        mNavigationDrawerUtil.updateCurrentFragment(listener);
+    }
+
+    public void setToolBarTitle(String title)
+    {
+        mToolbar.setTitle(title);
+    }
+
+    public void showFragment(Fragment fragment, boolean addToBackStack, String tag)
+    {
+        mNavigationDrawerUtil.loadFragment(fragment, addToBackStack, tag);
+    }
+
+    @Subscribe
+    public void snackBar(Snack snack)
+    {
+        Snackbar snackbar = Snackbar
+                .make(findViewById(android.R.id.content), snack.getMsg(), Snackbar.LENGTH_SHORT);
+        Snackbar.SnackbarLayout layout = (Snackbar.SnackbarLayout) snackbar.getView();
+
+        TextView textView = (TextView) layout.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL));
+        textView.setGravity(Gravity.CENTER_HORIZONTAL);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
+        {
+            textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        }
+        layout.setBackgroundResource(R.color.colorPrimary);
+        snackbar.show();
+    }
+
+    @Subscribe
+    public void toastMsg(ToastMsg toast)
+    {
+        Toast.makeText(this, toast.getMsg(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Subscribe
+    public void progressDialog(Progress progress)
+    {
+        if (progress.toBeShown())
+        {
+            showProgressDialog(progress.getMsg());
+        }
+        else
+        {
+            hideProgressDialog();
+        }
+    }
+
+    private void showProgressDialog(int msg)
+    {
+        Log.d(TAG, "showProgressDialog");
+        if (mProgressDialog == null)
+        {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setCanceledOnTouchOutside(false);
+            mProgressDialog.setMessage(getString(msg));
+            mProgressDialog.setIndeterminate(true);
+        }
+        mProgressDialog.show();
+    }
+
+    private void hideProgressDialog()
+    {
+        Log.d(TAG, "hideProgressDialog");
+        if (mProgressDialog != null && mProgressDialog.isShowing())
+        {
+            mProgressDialog.dismiss();
+        }
+    }
+
 }

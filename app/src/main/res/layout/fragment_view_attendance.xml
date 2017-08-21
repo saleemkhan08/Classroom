@@ -1,0 +1,75 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#eee"
+                android:minWidth="300dp"
+                android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/dialogHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary">
+
+        <TextView
+            android:id="@+id/dialogTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textAlignment="center"
+            android:text="Absentees"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dialog_title"
+            android:paddingTop="10dp"
+            android:textStyle="bold"
+            />
+        <TextView
+            android:id="@+id/dialogSubTitle"
+            android:layout_below="@+id/dialogTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textAlignment="center"
+            android:text="10/18/2017"
+            android:paddingBottom="10dp"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/dialog_sub_title"
+            android:textStyle="bold"
+            />
+
+        <ImageView
+            android:id="@+id/closeDialog"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/bg_drawable"
+            android:padding="13dp"
+            android:src="@drawable/ic_clear_white_24dp"/>
+    </RelativeLayout>
+    <android.support.v7.widget.RecyclerView
+        android:layout_below="@+id/dialogHeader"
+        android:id="@+id/attendanceListRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:layout_below="@+id/dialogHeader"
+        android:id="@+id/errorMsg"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        android:textColor="@color/com_facebook_button_background_color_focused_disabled"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:text="@string/noAbsentees"
+        android:layout_height="100dp"/>
+
+    <ProgressBar
+        android:id="@+id/recyclerProgress"
+        android:layout_below="@+id/dialogHeader"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:padding="30dp"/>
+
+</RelativeLayout>

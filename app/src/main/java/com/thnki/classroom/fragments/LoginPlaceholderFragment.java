@@ -44,11 +44,11 @@ public class LoginPlaceholderFragment extends Fragment
                 textView.setText(R.string.notes_management);
                 break;
             case 2:
-                bgImg.setImageResource(R.mipmap.attendance);
+                bgImg.setImageResource(R.mipmap.reading);
                 textView.setText(R.string.attendance_management);
                 break;
             case 3:
-                bgImg.setImageResource(R.mipmap.time_table);
+                bgImg.setImageResource(R.mipmap.teacher);
                 textView.setText(R.string.time_table_management);
                 break;
         }

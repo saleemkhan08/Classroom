@@ -5,6 +5,9 @@
     <color name="colorAccent">#87c03f</color>
     <color name="white">#fff</color>
     <color name="gray">#ddd</color>
+    <color name="background">#b6b6b6</color>
+    <color name="transparentWhite">#99ffffff</color>
+    <color name="dark_grey">#ccc</color>
 
     <array name="progressColors">
         <item>@color/colorPrimary</item>
