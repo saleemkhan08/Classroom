@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 
-import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
@@ -13,6 +12,7 @@ import com.squareup.otto.Subscribe;
 import com.thnki.classroom.R;
 import com.thnki.classroom.model.Students;
 import com.thnki.classroom.utils.ActionBarUtil;
+import com.thnki.classroom.utils.ImageUtil;
 import com.thnki.classroom.utils.Otto;
 import com.thnki.classroom.viewholders.StudentViewHolder;
 
@@ -52,9 +52,7 @@ public class StudentsAdapter extends FirebaseRecyclerAdapter<Students, StudentVi
     {
         Log.d(TAG, "populateViewHolder : " + position);
         String imageUrl = model.getPhotoUrl();
-        Glide.with(mActivity).load(imageUrl)
-                .asBitmap().placeholder(R.mipmap.user_icon_accent)
-                .centerCrop().into(viewHolder.mImageView);
+        ImageUtil.loadImg(viewHolder.itemView.getContext(), imageUrl, viewHolder.mImageView);
 
         viewHolder.mFullName.setText(model.getFullName());
         viewHolder.mUserId.setText(model.getUserId());

@@ -29,22 +29,26 @@ import com.thnki.classroom.LoginActivity;
 import com.thnki.classroom.ProfileActivity;
 import com.thnki.classroom.R;
 import com.thnki.classroom.fragments.ClassesListFragment;
+import com.thnki.classroom.fragments.LeavesFragment;
+import com.thnki.classroom.fragments.ResultsListFragment;
 import com.thnki.classroom.fragments.StaffListFragment;
 import com.thnki.classroom.fragments.StudentsListFragment;
 import com.thnki.classroom.listeners.EventsListener;
-import com.thnki.classroom.model.Classes;
-import com.thnki.classroom.model.Progress;
+import com.thnki.classroom.model.Staff;
+import com.thnki.classroom.model.Students;
+import com.thnki.classroom.model.User;
 
 import static android.content.ContentValues.TAG;
 
-public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSelectedListener
+public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSelectedListener, ValueEventListener
 {
     public static final String STUDENTS_LIST_FRAGMENT = "studentsListFragment";
     public static final String CLASSES_LIST_FRAGMENT = "classesListFragment";
     public static final String STAFF_LIST_FRAGMENT = "staffListFragment";
-    private static final int SUB_MENU_FIRST_ID = 820;//Random Number
+    public static final String LEAVES_LIST_FRAGMENT = "leavesListFragment";
+    public static final String RESULTS_FRAGMENT = "resultsFragment";
     public static final String ATTENDANCE_FRAGMENT = "attendanceFragment";
-    private final int mCurrentMenu;
+    private int mCurrentMenu;
 
     private AppCompatActivity mActivity;
     private DrawerLayout mDrawer;
@@ -54,13 +58,11 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
     public String mCurrentFragment = "";
     public NavigationView mNavigationView;
     public EventsListener mListener;
-    public boolean isMenuChanged;
     private Menu mMenu;
-    private long mTotalNumOfClasses;
-    private Classes mCurrentClass;
     private TextView mUserFullName;
     private TextView mUserId;
     private ImageView mProfileImgView;
+    public static User mCurrentUser;
 
     public NavigationDrawerUtil(AppCompatActivity activity)
     {
@@ -70,21 +72,23 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
         mDrawer = (DrawerLayout) mActivity.findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView) mActivity.findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
-        switch (mSharedPrefs.getString(LoginActivity.LOGIN_USER_ID, "c").charAt(0))
+        String userId = mSharedPrefs.getString(LoginActivity.LOGIN_USER_ID, "");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        if (userId.charAt(0) == 'a' || userId.charAt(0) == 's')
         {
-            case 'a':
-                mCurrentMenu = R.menu.admin_drawer;
-                loadFragment(CLASSES_LIST_FRAGMENT, false);
-                break;
-            case 's':
-                mCurrentMenu = R.menu.staff_drawer;
-                break;
-            default:
-                mCurrentMenu = R.menu.student_drawer;
-                break;
+            ref.child(User.STAFF).child(userId).addListenerForSingleValueEvent(this);
         }
-        loadCurrentMenu();
-        updateProfileInfo();
+        else
+        {
+            ref.child(User.STUDENTS).child(userId).addListenerForSingleValueEvent(this);
+        }
+        setUpUser();
+
+    }
+
+    private void setUpUser()
+    {
+
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -94,21 +98,19 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
         switch (item.getItemId())
         {
             case R.id.admin_students:
-                //loadFragment(STUDENTS_LIST_FRAGMENT, true);
-                if (isMenuChanged)
-                {
-                    removeClasses();
-                }
-                else
-                {
-                    loadClassesInMenu();
-                }
-                return true;
+                loadFragment(STUDENTS_LIST_FRAGMENT, true);
+                break;
             case R.id.admin_classes:
                 loadFragment(CLASSES_LIST_FRAGMENT, true);
                 break;
             case R.id.admin_staff:
                 loadFragment(STAFF_LIST_FRAGMENT, true);
+                break;
+            case R.id.admin_leaves:
+                loadFragment(LEAVES_LIST_FRAGMENT, true);
+                break;
+            case R.id.admin_results:
+                loadFragment(RESULTS_FRAGMENT, true);
                 break;
             case R.id.nav_notifications:
                 break;
@@ -116,62 +118,10 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
                 break;
             case R.id.nav_logout:
                 logout();
+                break;
         }
         closeDrawer();
         return true;
-    }
-
-    private void removeClasses()
-    {
-        if (isMenuChanged)
-        {
-            for (int i = 0; i < mTotalNumOfClasses; i++)
-            {
-                mMenu.removeItem(SUB_MENU_FIRST_ID + i);
-            }
-            isMenuChanged = false;
-        }
-    }
-
-    private void loadClassesInMenu()
-    {
-        final DatabaseReference classesDbRef = FirebaseDatabase.getInstance().getReference().child(Classes.CLASSES);
-        Progress.show(R.string.loading);
-        classesDbRef.addValueEventListener(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                Progress.hide();
-                int id = SUB_MENU_FIRST_ID;
-                mTotalNumOfClasses = dataSnapshot.getChildrenCount();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren())
-                {
-                    final Classes classes = snapshot.getValue(Classes.class);
-                    MenuItem item = mMenu.add(0, id++, 2, classes.getName());
-
-                    item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener()
-                    {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem menuItem)
-                        {
-                            mCurrentClass = classes;
-                            loadFragment(STUDENTS_LIST_FRAGMENT, true);
-                            return false;
-                        }
-                    });
-                }
-                isMenuChanged = true;
-                classesDbRef.removeEventListener(this);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
-                classesDbRef.removeEventListener(this);
-                Progress.hide();
-            }
-        });
     }
 
     private Fragment getFragment(String tag)
@@ -185,12 +135,16 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
                     return new ClassesListFragment();
                 case STAFF_LIST_FRAGMENT:
                     return new StaffListFragment();
+                case LEAVES_LIST_FRAGMENT:
+                    return new LeavesFragment();
+                case RESULTS_FRAGMENT:
+                    return new ResultsListFragment();
             }
         }
 
         if (tag.contains(STUDENTS_LIST_FRAGMENT))
         {
-            return StudentsListFragment.getInstance(mCurrentClass);
+            return new StudentsListFragment();
         }
 
         return fragment;
@@ -198,10 +152,6 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
 
     private void loadFragment(String tag, boolean addToBackStack)
     {
-        if (tag.equals(STUDENTS_LIST_FRAGMENT))
-        {
-            tag += mCurrentClass.getCode();
-        }
         Log.d(TAG, "loadFragment : " + tag);
         if (!mCurrentFragment.equals(tag))
         {
@@ -303,14 +253,6 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
         mListener = listener;
         String tag = listener.getTagName();
         mNavigationView.setCheckedItem(listener.getMenuItemId());
-        if (tag.contains(STUDENTS_LIST_FRAGMENT))
-        {
-            tag = STUDENTS_LIST_FRAGMENT + mCurrentClass.getCode();
-        }
-        else
-        {
-            removeClasses();
-        }
         mCurrentFragment = tag;
     }
 
@@ -320,9 +262,12 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
         mProfileImgView = (ImageView) headerView.findViewById(R.id.profileImageView);
         mUserFullName = (TextView) headerView.findViewById(R.id.userFullName);
         mUserId = (TextView) headerView.findViewById(R.id.userId);
-        mProfileImgView.setImageResource(R.mipmap.user_icon_accent);
-        mUserId.setText("c01001");
-        mUserFullName.setText("Saleem Khan");
+
+        mUserId.setText(mCurrentUser.getUserId());
+        mUserFullName.setText(mCurrentUser.getFullName());
+
+        ImageUtil.loadCircularImg(mActivity, mCurrentUser.getPhotoUrl(), mProfileImgView);
+
         headerView.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -331,5 +276,40 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
                 mActivity.startActivity(new Intent(mActivity, ProfileActivity.class));
             }
         });
+    }
+
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot)
+    {
+        if (dataSnapshot.hasChild(Staff.IS_ADMIN))
+        {
+            mCurrentUser = dataSnapshot.getValue(Staff.class);
+        }
+        else
+        {
+            mCurrentUser = dataSnapshot.getValue(Students.class);
+        }
+
+        switch (mCurrentUser.getUserType())
+        {
+            case User.ADMIN:
+                mCurrentMenu = R.menu.admin_drawer;
+                loadFragment(CLASSES_LIST_FRAGMENT, false);
+                break;
+            case User.STAFF:
+                mCurrentMenu = R.menu.staff_drawer;
+                break;
+            default:
+                mCurrentMenu = R.menu.student_drawer;
+                break;
+        }
+        loadCurrentMenu();
+        updateProfileInfo();
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError)
+    {
+
     }
 }

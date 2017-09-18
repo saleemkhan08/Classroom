@@ -4,9 +4,14 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/admin_classes"
-            android:icon="@mipmap/courses"
+            android:icon="@mipmap/classes"
             android:orderInCategory="1"
             android:title="@string/classes"/>
+        <item
+            android:id="@+id/admin_subjects"
+            android:icon="@mipmap/courses"
+            android:orderInCategory="1"
+            android:title="@string/subjects"/>
         <item
             android:id="@+id/admin_students"
             android:icon="@mipmap/student"

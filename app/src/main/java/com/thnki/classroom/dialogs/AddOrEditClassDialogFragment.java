@@ -1,17 +1,11 @@
 package com.thnki.classroom.dialogs;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -28,13 +22,11 @@ import com.thnki.classroom.model.Classes;
 import com.thnki.classroom.model.Progress;
 import com.thnki.classroom.model.Staff;
 import com.thnki.classroom.model.ToastMsg;
-import com.thnki.classroom.utils.Otto;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
-public class AddOrEditClassDialogFragment extends DialogFragment implements AdapterView.OnItemSelectedListener, View.OnTouchListener
+public class AddOrEditClassDialogFragment extends CustomDialogFragment implements AdapterView.OnItemSelectedListener, View.OnTouchListener
 {
     public static final String TAG = "AddOrEditClassDialogFragment";
 
@@ -49,9 +41,6 @@ public class AddOrEditClassDialogFragment extends DialogFragment implements Adap
 
     @Bind(R.id.classTeacher)
     EditText mClassTeacher;
-
-    @Bind(R.id.dialogTitle)
-    TextView mDialogTitle;
 
     Classes mCurrentClass;
 
@@ -68,19 +57,15 @@ public class AddOrEditClassDialogFragment extends DialogFragment implements Adap
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
+    public void onCreateView(View parentView)
     {
-        Window window = getDialog().getWindow();
-        if (window != null)
-        {
-            window.requestFeature(Window.FEATURE_NO_TITLE);
-        }
-
-        View parentView = inflater.inflate(R.layout.fragment_add_class, container, false);
         ButterKnife.bind(this, parentView);
-        Otto.register(this);
-        return parentView;
+    }
+
+    @Override
+    protected int getContentViewLayoutRes()
+    {
+        return R.layout.fragment_add_class;
     }
 
     @Override
@@ -93,6 +78,7 @@ public class AddOrEditClassDialogFragment extends DialogFragment implements Adap
         mClassTeacherSpinner.setAdapter(adapter);
         mClassTeacherSpinner.setOnItemSelectedListener(this);
         mClassTeacher.setOnTouchListener(this);
+        setDialogTitle(R.string.addClass);
         if (mCurrentClass != null)
         {
             mClassTeacher.setText(mCurrentClass.getClassTeacherName());
@@ -100,32 +86,14 @@ public class AddOrEditClassDialogFragment extends DialogFragment implements Adap
             mClassCode.setText(mCurrentClass.getCode());
             mClassCode.setEnabled(false);
             mClassName.setText(mCurrentClass.getName());
-            mDialogTitle.setText(R.string.editClass);
+            setDialogTitle(R.string.editClass);
         }
+        setSubmitBtnTxt(R.string.save);
+        setSubmitBtnImg(R.mipmap.save_button);
     }
 
     @Override
-    public void onPause()
-    {
-        super.onPause();
-        dismiss();
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog)
-    {
-        super.onDismiss(dialog);
-        Otto.unregister(this);
-    }
-
-    @OnClick(R.id.closeDialog)
-    public void close()
-    {
-        dismiss();
-    }
-
-    @OnClick(R.id.saveClassButton)
-    public void save()
+    public void submit(View view)
     {
         String className = mClassName.getText().toString();
         String classCode = mClassCode.getText().toString();

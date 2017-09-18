@@ -1,13 +1,7 @@
 package com.thnki.classroom.dialogs;
 
-import android.content.DialogInterface;
-import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.EditText;
 
 import com.google.firebase.database.DataSnapshot;
@@ -20,15 +14,13 @@ import com.thnki.classroom.model.Classes;
 import com.thnki.classroom.model.Progress;
 import com.thnki.classroom.model.Students;
 import com.thnki.classroom.model.ToastMsg;
-import com.thnki.classroom.utils.Otto;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
-public class AddStudentsDialogFragment extends DialogFragment
+public class AddStudentsDialogFragment extends CustomDialogFragment
 {
     public static final String TAG = "AddStudentsDF";
 
@@ -53,19 +45,15 @@ public class AddStudentsDialogFragment extends DialogFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
+    public void onCreateView(View parentView)
     {
-        Window window = getDialog().getWindow();
-        if (window != null)
-        {
-            window.requestFeature(Window.FEATURE_NO_TITLE);
-        }
-
-        View parentView = inflater.inflate(R.layout.fragment_add_student, container, false);
         ButterKnife.bind(this, parentView);
-        Otto.register(this);
-        return parentView;
+    }
+
+    @Override
+    protected int getContentViewLayoutRes()
+    {
+        return R.layout.fragment_add_student;
     }
 
     @Override
@@ -74,30 +62,13 @@ public class AddStudentsDialogFragment extends DialogFragment
         super.onStart();
         mRootRef = FirebaseDatabase.getInstance().getReference();
         mClassesDbRef = mRootRef.child(Classes.CLASSES);
+        setDialogTitle(R.string.addStudents);
+        setSubmitBtnTxt(R.string.add);
+        setSubmitBtnImg(R.mipmap.plus);
     }
 
     @Override
-    public void onPause()
-    {
-        super.onPause();
-        dismiss();
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog)
-    {
-        super.onDismiss(dialog);
-        Otto.unregister(this);
-    }
-
-    @OnClick(R.id.closeDialog)
-    public void close()
-    {
-        dismiss();
-    }
-
-    @OnClick(R.id.saveClassButton)
-    public void save()
+    public void submit(View view)
     {
         String studentCountText = mStudentCount.getText().toString();
         if (TextUtils.isEmpty(studentCountText))

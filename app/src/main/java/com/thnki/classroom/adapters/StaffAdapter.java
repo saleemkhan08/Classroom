@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 
-import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -22,6 +21,7 @@ import com.thnki.classroom.model.Progress;
 import com.thnki.classroom.model.Staff;
 import com.thnki.classroom.model.ToastMsg;
 import com.thnki.classroom.utils.ActionBarUtil;
+import com.thnki.classroom.utils.ImageUtil;
 import com.thnki.classroom.utils.Otto;
 import com.thnki.classroom.viewholders.StaffViewHolder;
 
@@ -60,9 +60,7 @@ public class StaffAdapter extends FirebaseRecyclerAdapter<Staff, StaffViewHolder
     protected void populateViewHolder(final StaffViewHolder viewHolder, final Staff model, int position)
     {
         String imageUrl = model.getPhotoUrl();
-        Glide.with(mActivity).load(imageUrl)
-                .asBitmap().placeholder(R.mipmap.user_icon_accent)
-                .centerCrop().into(viewHolder.mImageView);
+        ImageUtil.loadImg(viewHolder.itemView.getContext(), imageUrl, viewHolder.mImageView);
 
         viewHolder.mFullName.setText(model.getFullName());
         viewHolder.mUserId.setText(model.getUserId());

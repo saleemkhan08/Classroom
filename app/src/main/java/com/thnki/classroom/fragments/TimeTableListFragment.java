@@ -43,7 +43,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class StudentsListFragment extends ClassTabFragment implements EventsListener, DatePickerDialog.OnDateSetListener
+public class TimeTableListFragment extends ClassTabFragment implements EventsListener, DatePickerDialog.OnDateSetListener
 {
     private static final String TAG = "StudentsListFragment";
 
@@ -72,7 +72,7 @@ public class StudentsListFragment extends ClassTabFragment implements EventsList
     private DatabaseReference mStudentsDbRef;
     private DatabaseReference mClassesDbRef;
 
-    public StudentsListFragment()
+    public TimeTableListFragment()
     {
         Log.d(TAG, "StudentsListFragment");
     }
@@ -82,6 +82,12 @@ public class StudentsListFragment extends ClassTabFragment implements EventsList
     {
         Log.d(TAG, "onCreateView2");
         ButterKnife.bind(this, parentView);
+//        mStudentsListRecyclerView = (RecyclerView) parentView.findViewById(R.id.studentsListRecyclerView);
+//        mProgress = parentView.findViewById(R.id.recyclerProgress);
+//        mErrorMsg = parentView.findViewById(R.id.errorMsg);
+//        mFabContainer = (ViewGroup) parentView.findViewById(R.id.fabContainer);
+//        mTakeAttendanceFab = parentView.findViewById(R.id.attendanceFab);
+//        mSaveAttendanceFab = parentView.findViewById(R.id.savefab);
     }
 
     @Override
@@ -312,7 +318,6 @@ public class StudentsListFragment extends ClassTabFragment implements EventsList
         Log.d(TAG, "onTabSelected");
         mCurrentClass = (Classes) tab.getTag();
         ((MainActivity) getActivity()).setToolBarTitle(mCurrentClass.getName());
-        mProgress.setVisibility(View.VISIBLE);
         setUpRecyclerView();
     }
 }

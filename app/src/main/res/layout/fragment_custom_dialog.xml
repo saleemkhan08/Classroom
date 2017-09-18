@@ -1,0 +1,122 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#eee"
+                android:minWidth="300dp"
+                android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/dialogHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:id="@+id/titleContainer"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/dialogTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:paddingTop="10dp"
+                android:text="@string/dialogTitle"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="@dimen/dialog_title"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:id="@+id/dialogSubTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dialogTitle"
+                android:layout_centerInParent="true"
+                android:paddingBottom="10dp"
+                android:text="@string/subTitle"
+                android:textAlignment="center"
+                android:textColor="@color/gray"
+                android:textSize="@dimen/dialog_sub_title"
+                android:textStyle="bold"
+                android:visibility="gone"
+                />
+
+            <View
+                android:id="@+id/bottomPadding"
+                android:layout_width="wrap_content"
+                android:layout_height="10dp"
+                android:layout_below="@+id/dialogTitle"
+                />
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/closeDialog"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/bg_drawable"
+            android:padding="13dp"
+            android:src="@drawable/ic_clear_white_24dp"/>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/classesTab"
+            android:layout_below="@+id/titleContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            app:tabMode="scrollable"
+            android:visibility="gone"
+            app:tabSelectedTextColor="@color/white"
+            app:tabTextColor="@color/gray"/>
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/dialogContainer"
+        android:layout_below="@+id/dialogHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="100dp"
+        android:orientation="vertical">
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialogContainer"
+        android:background="#ccc"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/submitBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_drawable"
+            android:clickable="true"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/submitBtnTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="@string/submit"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:textColor="@color/colorAccent"
+                android:textStyle="bold"/>
+
+            <ImageView
+                android:id="@+id/submitBtnImg"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="9dp"
+                android:src="@mipmap/save_button"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

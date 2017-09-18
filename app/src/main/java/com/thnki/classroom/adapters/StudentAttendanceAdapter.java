@@ -7,9 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
 import com.thnki.classroom.R;
 import com.thnki.classroom.model.Students;
+import com.thnki.classroom.utils.ImageUtil;
 import com.thnki.classroom.viewholders.StudentViewHolder;
 
 import java.util.ArrayList;
@@ -40,9 +40,7 @@ public class StudentAttendanceAdapter extends RecyclerView.Adapter<StudentViewHo
         Students model = mAbsentees.get(position);
                 Log.d(TAG, "populateViewHolder : " + position);
         String imageUrl = model.getPhotoUrl();
-        Glide.with(mActivity).load(imageUrl)
-                .asBitmap().placeholder(R.mipmap.user_icon_accent)
-                .centerCrop().into(viewHolder.mImageView);
+        ImageUtil.loadImg(viewHolder.itemView.getContext(), imageUrl, viewHolder.mImageView);
 
         viewHolder.mFullName.setText(model.getFullName());
         viewHolder.mUserId.setText(model.getUserId());

@@ -134,7 +134,15 @@ public class MainActivity extends AppCompatActivity
     @Subscribe
     public void toastMsg(ToastMsg toast)
     {
-        Toast.makeText(this, toast.getMsg(), Toast.LENGTH_SHORT).show();
+        if (toast.getTxtMsg() == null)
+        {
+            Toast.makeText(this, toast.getMsg(), Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(this, toast.getTxtMsg(), Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Subscribe

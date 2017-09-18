@@ -14,6 +14,7 @@ public class ActionBarUtil
     public static final String SHOW_INDEPENDENT_STUDENTS_MENU = "showIndependentStudentsMenu";
     public static final String SHOW_MULTIPLE_STUDENT_MENU = "showMultipleStudentMenu";
     public static final String SHOW_ATTENDANCE_MENU = "showAttendanceMenu";
+    public static final String SHOW_ADMIN_LEAVES_MENU = "showAdminLeavesMenu";
     Activity mActivity;
     MenuInflater mMenuInflater;
     Menu mMenu;
@@ -47,6 +48,9 @@ public class ActionBarUtil
                 break;
             case SHOW_ATTENDANCE_MENU:
                 loadNewMenu(R.menu.attendance_menu);
+                break;
+            case SHOW_ADMIN_LEAVES_MENU:
+                loadNewMenu(R.menu.admin_leaves_menu);
                 break;
             case NO_MENU:
                 mMenu.clear();

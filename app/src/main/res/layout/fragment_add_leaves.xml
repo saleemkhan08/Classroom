@@ -3,42 +3,58 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_below="@+id/dialogHeader"
+    android:orientation="vertical"
+    android:paddingTop="5dp">
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dialogItemPadding"
+        android:layout_margin="@dimen/dialogItemPadding"
         android:padding="@dimen/dialogItemPadding">
 
         <EditText
-            android:id="@+id/className"
+            android:id="@+id/reason"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/className"
-            android:inputType="textPersonName"
-            android:maxLines="1"
+            android:hint="@string/reasonForLeave"
             android:textColor="@color/colorPrimaryDark"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dialogItemPadding"
+        android:layout_margin="@dimen/dialogItemPadding"
         android:padding="@dimen/dialogItemPadding">
 
         <EditText
-            android:id="@+id/classCode"
+            android:id="@+id/fromDate"
+            android:inputType="date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/classCode"
-            android:maxLines="1"
+            android:hint="@string/fromDate"
+            android:textColor="@color/colorPrimaryDark"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dialogItemPadding"
+        android:padding="@dimen/dialogItemPadding">
+
+        <EditText
+            android:id="@+id/toDate"
+            android:inputType="date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/toDate"
             android:textColor="@color/colorPrimaryDark"/>
     </android.support.design.widget.TextInputLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dialogItemPadding"
         android:layout_marginBottom="@dimen/dialogItemPadding">
 
         <android.support.design.widget.TextInputLayout
@@ -48,17 +64,17 @@
             android:padding="@dimen/dialogItemPadding">
 
             <EditText
-                android:id="@+id/classTeacher"
+                android:id="@+id/approver"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/classTeacher"
+                android:hint="@string/approver"
                 android:maxLines="1"
                 android:textColor="@color/colorPrimaryDark"/>
 
         </android.support.design.widget.TextInputLayout>
 
         <Spinner
-            android:id="@+id/classTeacherSpinner"
+            android:id="@+id/approverSpinner"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_below="@+id/classTeacherContainer"

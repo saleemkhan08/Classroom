@@ -1,17 +1,10 @@
 package com.thnki.classroom.dialogs;
 
-import android.content.DialogInterface;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.EditText;
 import android.widget.Switch;
-import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -21,13 +14,11 @@ import com.thnki.classroom.R;
 import com.thnki.classroom.model.Progress;
 import com.thnki.classroom.model.Staff;
 import com.thnki.classroom.model.ToastMsg;
-import com.thnki.classroom.utils.Otto;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
-public class AddOrEditStaffDialogFragment extends DialogFragment
+public class AddOrEditStaffDialogFragment extends CustomDialogFragment
 {
     public static final String TAG = "AddOrEditStaffDialogFragment";
 
@@ -46,9 +37,6 @@ public class AddOrEditStaffDialogFragment extends DialogFragment
     @Bind(R.id.isAdmin)
     Switch mIsAdmin;
 
-    @Bind(R.id.dialogTitle)
-    TextView mDialogTitle;
-
     Staff mCurrentStaff;
 
     public static AddOrEditStaffDialogFragment getInstance(Staff classes)
@@ -64,28 +52,24 @@ public class AddOrEditStaffDialogFragment extends DialogFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
+    public void onCreateView(View parentView)
     {
-        Window window = getDialog().getWindow();
-        if (window != null)
-        {
-            window.requestFeature(Window.FEATURE_NO_TITLE);
-        }
-
-        View parentView = inflater.inflate(R.layout.fragment_add_staffs, container, false);
         ButterKnife.bind(this, parentView);
-        Otto.register(this);
-        return parentView;
+    }
+
+    @Override
+    protected int getContentViewLayoutRes()
+    {
+        return R.layout.fragment_add_staffs;
     }
 
     @Override
     public void onStart()
     {
         super.onStart();
+        setDialogTitle(R.string.addNewStaff);
         if (mCurrentStaff != null)
         {
-            mDialogTitle.setText(R.string.editStaff);
             mDesignation.setText(mCurrentStaff.getDesignation());
             mIsAdmin.setChecked(mCurrentStaff.getIsAdmin());
 
@@ -94,31 +78,14 @@ public class AddOrEditStaffDialogFragment extends DialogFragment
 
             mStaffName.setText(mCurrentStaff.getFullName());
             mQualification.setText(mCurrentStaff.getQualification());
+            setDialogTitle(R.string.editStaff);
         }
+        setSubmitBtnTxt(R.string.save);
+        setSubmitBtnImg(R.mipmap.save_button);
     }
 
     @Override
-    public void onPause()
-    {
-        super.onPause();
-        dismiss();
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog)
-    {
-        super.onDismiss(dialog);
-        Otto.unregister(this);
-    }
-
-    @OnClick(R.id.closeDialog)
-    public void close()
-    {
-        dismiss();
-    }
-
-    @OnClick(R.id.saveClassButton)
-    public void save()
+    public void submit(View view)
     {
         String staffName = mStaffName.getText().toString();
         String staffUserId = mStaffUserId.getText().toString();
