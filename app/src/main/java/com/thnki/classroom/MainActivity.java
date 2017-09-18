@@ -148,6 +148,10 @@ public class MainActivity extends AppCompatActivity
     @Subscribe
     public void progressDialog(Progress progress)
     {
+        if (progress.getMsg() != 0)
+        {
+            Log.d("progressDialog", "" + getString(progress.getMsg()));
+        }
         if (progress.toBeShown())
         {
             showProgressDialog(progress.getMsg());
@@ -165,9 +169,9 @@ public class MainActivity extends AppCompatActivity
         {
             mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setCanceledOnTouchOutside(false);
-            mProgressDialog.setMessage(getString(msg));
             mProgressDialog.setIndeterminate(true);
         }
+        mProgressDialog.setMessage(getString(msg));
         mProgressDialog.show();
     }
 

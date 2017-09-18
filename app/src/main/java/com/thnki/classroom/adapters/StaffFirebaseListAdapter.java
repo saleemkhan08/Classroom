@@ -19,6 +19,6 @@ public class StaffFirebaseListAdapter extends FirebaseListAdapter<Staff>
     protected void populateView(View v, Staff model, int position)
     {
         ((TextView) v).setText(model.getFullName());
-        v.setTag(model.getUserId()) ;
+        v.setTag(model) ;
     }
 }

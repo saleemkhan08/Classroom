@@ -211,4 +211,12 @@
     <string name="select">Select</string>
     <string name="leaveDetails">Leave Details</string>
     <string name="reason">Reason</string>
+    <string name="noSubjectsFound">No Subjects Found...</string>
+    <string name="subjectName">Subject Name</string>
+    <string name="teacher">Teacher</string>
+    <string name="addAnother">Add Another</string>
+    <string name="addSubject">Add Subject</string>
+    <string name="editSubject">Edit Subject</string>
+    <string name="please_enter_a_valid_subject_name">Please enter a valid Subject Name</string>
+    <string name="subjectCode">Subject Code</string>
 </resources>

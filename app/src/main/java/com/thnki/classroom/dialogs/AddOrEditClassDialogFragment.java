@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -97,7 +98,7 @@ public class AddOrEditClassDialogFragment extends CustomDialogFragment implement
     {
         String className = mClassName.getText().toString();
         String classCode = mClassCode.getText().toString();
-        String classTeacherId = (String) mClassTeacher.getTag();
+        String classTeacherId = ((Staff) mClassTeacher.getTag()).getUserId();
         if (TextUtils.isEmpty(className))
         {
             ToastMsg.show(R.string.please_enter_class_name);
@@ -118,6 +119,7 @@ public class AddOrEditClassDialogFragment extends CustomDialogFragment implement
             mCurrentClass.setClassTeacherName(mClassTeacher.getText().toString());
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child(Classes.CLASSES);
             Progress.show(R.string.saving);
+            Log.d("SavingP", "" + this);
             reference.child(classCode).setValue(mCurrentClass).addOnCompleteListener(new OnCompleteListener<Void>()
             {
                 @Override

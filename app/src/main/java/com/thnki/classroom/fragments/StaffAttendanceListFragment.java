@@ -167,6 +167,7 @@ public class StaffAttendanceListFragment extends Fragment implements EventsListe
         attendance.setStaffId(preferences.getString(LOGIN_USER_ID, ""));
         attendance.setTakenDate(mTakenDate);
         Progress.show(R.string.saving);
+        Log.d("SavingP", "" + this);
         mAttendanceRef.child(mAttendanceDate).setValue(attendance).addOnCompleteListener(new OnCompleteListener<Void>()
         {
             @Override

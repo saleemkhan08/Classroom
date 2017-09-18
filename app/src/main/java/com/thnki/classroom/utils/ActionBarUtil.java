@@ -13,6 +13,8 @@ public class ActionBarUtil
     public static final String NO_MENU = "showClassesMenu";
     public static final String SHOW_INDEPENDENT_STUDENTS_MENU = "showIndependentStudentsMenu";
     public static final String SHOW_MULTIPLE_STUDENT_MENU = "showMultipleStudentMenu";
+    public static final String SHOW_INDEPENDENT_SUBJECT_MENU = "showIndependentSubjectMenu";
+    public static final String SHOW_MULTIPLE_SUBJECT_MENU = "showMultipleSubjectMenu";
     public static final String SHOW_ATTENDANCE_MENU = "showAttendanceMenu";
     public static final String SHOW_ADMIN_LEAVES_MENU = "showAdminLeavesMenu";
     Activity mActivity;
@@ -46,6 +48,9 @@ public class ActionBarUtil
             case SHOW_INDEPENDENT_STUDENTS_MENU:
                 loadNewMenu(R.menu.independent_student_menu);
                 break;
+            case SHOW_MULTIPLE_SUBJECT_MENU:
+                loadNewMenu(R.menu.multiple_subject_menu);
+                break;
             case SHOW_ATTENDANCE_MENU:
                 loadNewMenu(R.menu.attendance_menu);
                 break;
@@ -53,6 +58,7 @@ public class ActionBarUtil
                 loadNewMenu(R.menu.admin_leaves_menu);
                 break;
             case NO_MENU:
+            case SHOW_INDEPENDENT_SUBJECT_MENU:
                 mMenu.clear();
                 break;
         }

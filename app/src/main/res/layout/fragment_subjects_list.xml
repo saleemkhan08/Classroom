@@ -16,13 +16,13 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:padding="10dp"
-        android:text="@string/noStudentsFound"
+        android:text="@string/noSubjectsFound"
         android:textAppearance="?android:textAppearanceLarge"
         android:textColor="@android:color/darker_gray"
         android:visibility="gone"/>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/studentsListRecyclerView"
+        android:id="@+id/subjetcsListRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
@@ -35,18 +35,11 @@
         android:layout_alignParentRight="true">
 
         <android.support.design.widget.FloatingActionButton
-            android:id="@+id/attendanceFab"
+            android:id="@+id/addSubjects"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@mipmap/take_attendance"/>
+            app:srcCompat="@mipmap/ic_add_white_48dp"/>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/savefab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/fab_margin"
-            android:visibility="gone"
-            app:srcCompat="@drawable/ic_save_white_48dp"/>
     </RelativeLayout>
 </RelativeLayout>

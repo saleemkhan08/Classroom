@@ -1,20 +1,15 @@
 package com.thnki.classroom.fragments;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,32 +18,29 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Subscribe;
 import com.thnki.classroom.MainActivity;
 import com.thnki.classroom.R;
-import com.thnki.classroom.adapters.StudentsAdapter;
-import com.thnki.classroom.dialogs.AddStudentsDialogFragment;
-import com.thnki.classroom.dialogs.ViewStudentAttendanceDialogFragment;
+import com.thnki.classroom.adapters.SubjectsAdapter;
+import com.thnki.classroom.dialogs.AddSubjectsDialogFragment;
 import com.thnki.classroom.listeners.EventsListener;
 import com.thnki.classroom.model.Classes;
 import com.thnki.classroom.model.Progress;
-import com.thnki.classroom.model.Students;
+import com.thnki.classroom.model.Subjects;
 import com.thnki.classroom.model.ToastMsg;
 import com.thnki.classroom.utils.ActionBarUtil;
 import com.thnki.classroom.utils.NavigationDrawerUtil;
 import com.thnki.classroom.utils.Otto;
 import com.thnki.classroom.utils.TransitionUtil;
 
-import java.util.Calendar;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class SubjectsListFragment extends ClassTabFragment implements EventsListener, DatePickerDialog.OnDateSetListener
+public class SubjectsListFragment extends ClassTabFragment implements EventsListener
 {
     private static final String TAG = "SubjectsListFragment";
 
-    @Bind(R.id.studentsListRecyclerView)
-    RecyclerView mStudentsListRecyclerView;
+    @Bind(R.id.subjetcsListRecyclerView)
+    RecyclerView mSubjectsListRecyclerView;
 
     @Bind(R.id.recyclerProgress)
     View mProgress;
@@ -59,22 +51,18 @@ public class SubjectsListFragment extends ClassTabFragment implements EventsList
     @Bind(R.id.fabContainer)
     ViewGroup mFabContainer;
 
-    @Bind(R.id.attendanceFab)
-    View mTakeAttendanceFab;
-
-    @Bind(R.id.savefab)
-    View mSaveAttendanceFab;
+    @Bind(R.id.addSubjects)
+    View mAddSubjectsFab;
 
     private DatabaseReference mRootRef;
     private Classes mCurrentClass;
-    private StudentsAdapter mAdapter;
-    private DatePickerDialog mDatePickerDialog;
-    private DatabaseReference mStudentsDbRef;
-    private DatabaseReference mClassesDbRef;
+    private SubjectsAdapter mAdapter;
+    private DatabaseReference mSubjectsDbRef;
+    private Handler mHandler;
 
     public SubjectsListFragment()
     {
-        Log.d(TAG, "StudentsListFragment");
+        Log.d(TAG, "SubjectsListFragment");
     }
 
     @Override
@@ -82,6 +70,7 @@ public class SubjectsListFragment extends ClassTabFragment implements EventsList
     {
         Log.d(TAG, "onCreateView2");
         ButterKnife.bind(this, parentView);
+        mHandler = new Handler();
     }
 
     @Override
@@ -89,6 +78,7 @@ public class SubjectsListFragment extends ClassTabFragment implements EventsList
     {
         super.onStart();
         Log.d(TAG, "onStart");
+        ((MainActivity) getActivity()).setToolBarTitle(getString(R.string.subjects));
         mRootRef = FirebaseDatabase.getInstance().getReference();
         Otto.register(this);
     }
@@ -109,12 +99,8 @@ public class SubjectsListFragment extends ClassTabFragment implements EventsList
         if (activity instanceof MainActivity)
         {
             ((MainActivity) activity).updateEventsListener(this);
-            Otto.post(ActionBarUtil.SHOW_INDEPENDENT_STUDENTS_MENU);
+            Otto.post(ActionBarUtil.SHOW_INDEPENDENT_SUBJECT_MENU);
         }
-        mDatePickerDialog = new DatePickerDialog(getActivity(), this,
-                Calendar.getInstance().get(Calendar.YEAR),
-                Calendar.getInstance().get(Calendar.MONTH),
-                Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
     }
 
 
@@ -129,12 +115,11 @@ public class SubjectsListFragment extends ClassTabFragment implements EventsList
     private void setUpRecyclerView()
     {
         Log.d(TAG, "setUpRecyclerView");
-        mStudentsDbRef = mRootRef.child(Students.STUDENTS).child(mCurrentClass.getCode());
-        mClassesDbRef = mRootRef.child(Classes.CLASSES).child(mCurrentClass.getCode());
-        mAdapter = StudentsAdapter.getInstance(mStudentsDbRef, getActivity());
-        mStudentsListRecyclerView.setAdapter(mAdapter);
-        mStudentsListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mStudentsListRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
+        mSubjectsDbRef = mRootRef.child(Subjects.SUBJECTS).child(mCurrentClass.getCode());
+        mAdapter = SubjectsAdapter.getInstance(mSubjectsDbRef, (AppCompatActivity) getActivity());
+        mSubjectsListRecyclerView.setAdapter(mAdapter);
+        mSubjectsListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mSubjectsListRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
         {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy)
@@ -165,7 +150,7 @@ public class SubjectsListFragment extends ClassTabFragment implements EventsList
                 super.onScrollStateChanged(recyclerView, newState);
             }
         });
-        mStudentsDbRef.addValueEventListener(new ValueEventListener()
+        mSubjectsDbRef.addValueEventListener(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
@@ -190,32 +175,21 @@ public class SubjectsListFragment extends ClassTabFragment implements EventsList
         });
     }
 
-    @OnClick(R.id.attendanceFab)
-    public void takeAttendance(View view)
+    @OnClick(R.id.addSubjects)
+    public void addSubjects(View view)
     {
-        mAdapter.enableAttendance();
-        mSaveAttendanceFab.setVisibility(View.VISIBLE);
-        mTakeAttendanceFab.setVisibility(View.GONE);
-    }
-
-    @OnClick(R.id.savefab)
-    public void saveAttendance(View view)
-    {
-        onBackPressed();
-        StudentAttendanceListFragment fragment = StudentAttendanceListFragment.getInstance(mAdapter.mUnSelectedStudents, mCurrentClass.getCode());
-        ((MainActivity) getActivity()).showFragment(fragment, true, StudentAttendanceListFragment.TAG);
+        AddSubjectsDialogFragment fragment = AddSubjectsDialogFragment.getInstance(mCurrentClass.getCode());
+        fragment.show(getFragmentManager(), AddSubjectsDialogFragment.TAG);
     }
 
     @Override
     public boolean onBackPressed()
     {
-        if (StudentsAdapter.isSelectionEnabled)
+        if (SubjectsAdapter.isSelectionEnabled)
         {
-            StudentsAdapter.isSelectionEnabled = false;
+            SubjectsAdapter.isSelectionEnabled = false;
             mAdapter.notifyDataSetChanged();
-            Otto.post(ActionBarUtil.SHOW_INDEPENDENT_STUDENTS_MENU);
-            mSaveAttendanceFab.setVisibility(View.GONE);
-            mTakeAttendanceFab.setVisibility(View.VISIBLE);
+            Otto.post(ActionBarUtil.SHOW_INDEPENDENT_SUBJECT_MENU);
             return false;
         }
         return true;
@@ -224,13 +198,13 @@ public class SubjectsListFragment extends ClassTabFragment implements EventsList
     @Override
     public int getMenuItemId()
     {
-        return R.id.admin_students;
+        return R.id.admin_subjects;
     }
 
     @Override
     public String getTagName()
     {
-        return NavigationDrawerUtil.STUDENTS_LIST_FRAGMENT;
+        return NavigationDrawerUtil.SUBJECTS_FRAGMENT;
     }
 
     @Subscribe
@@ -238,72 +212,26 @@ public class SubjectsListFragment extends ClassTabFragment implements EventsList
     {
         switch (itemId)
         {
-            case R.id.addNewStudent:
-                showDialogFragment();
-                break;
-            case R.id.selectAll:
+            case R.id.selectAllSubjects:
                 mAdapter.setSelectAll();
                 break;
-            case R.id.viewStudentAttendance:
-                mDatePickerDialog.show();
-                break;
-            case R.id.deleteStudents:
+            case R.id.deleteSubjects:
                 Progress.show(R.string.deleting);
-                for (String code : mAdapter.mSelectedStudents)
+                for (String code : mAdapter.mSelectedSubjects)
                 {
-                    mStudentsDbRef.getRef().child(code).removeValue();
+                    mSubjectsDbRef.getRef().child(code).removeValue();
                 }
-                mStudentsDbRef.addValueEventListener(new ValueEventListener()
+                mHandler.postDelayed(new Runnable()
                 {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot)
-                    {
-                        mCurrentClass.setStudentCount((int) dataSnapshot.getChildrenCount());
-                        mClassesDbRef.setValue(mCurrentClass)
-                                .addOnCompleteListener(new OnCompleteListener<Void>()
-                                {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task)
-                                    {
-                                        Progress.hide();
-                                        if (task.isSuccessful())
-                                        {
-                                            onBackPressed();
-                                            ToastMsg.show(R.string.deleted);
-                                        }
-                                        else
-                                        {
-                                            ToastMsg.show(R.string.couldntUpdateStudentCount);
-                                        }
-                                    }
-                                });
-                        mStudentsDbRef.removeEventListener(this);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError)
+                    public void run()
                     {
                         Progress.hide();
-                        ToastMsg.show(R.string.please_try_again);
+                        ToastMsg.show(R.string.deleted);
                     }
-                });
+                }, 500);
                 break;
         }
-    }
-
-    public void showDialogFragment()
-    {
-        FragmentManager manager = getActivity().getSupportFragmentManager();
-        AddStudentsDialogFragment fragment = AddStudentsDialogFragment.getInstance(mCurrentClass);
-        fragment.show(manager, AddStudentsDialogFragment.TAG);
-    }
-
-    @Override
-    public void onDateSet(DatePicker datePicker, int year, int month, int day)
-    {
-        FragmentManager manager = getActivity().getSupportFragmentManager();
-        ViewStudentAttendanceDialogFragment fragment = ViewStudentAttendanceDialogFragment.getInstance(mCurrentClass.getCode(), year, month, day);
-        fragment.show(manager, ViewStudentAttendanceDialogFragment.TAG);
     }
 
     @Override
@@ -311,7 +239,6 @@ public class SubjectsListFragment extends ClassTabFragment implements EventsList
     {
         Log.d(TAG, "onTabSelected");
         mCurrentClass = (Classes) tab.getTag();
-        ((MainActivity) getActivity()).setToolBarTitle(mCurrentClass.getName());
         setUpRecyclerView();
     }
 }

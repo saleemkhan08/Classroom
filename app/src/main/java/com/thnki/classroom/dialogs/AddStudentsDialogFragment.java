@@ -1,6 +1,7 @@
 package com.thnki.classroom.dialogs;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -80,6 +81,7 @@ public class AddStudentsDialogFragment extends CustomDialogFragment
             final int studentCount = Integer.parseInt(studentCountText);
             mStudentDbRef = mRootRef.child(Students.STUDENTS).child(mCurrentClass.getCode());
             Progress.show(R.string.saving);
+            Log.d("SavingP", "" + this);
             mStudentDbRef.addValueEventListener(new ValueEventListener()
             {
                 @Override

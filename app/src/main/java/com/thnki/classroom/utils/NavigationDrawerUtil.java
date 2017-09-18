@@ -33,6 +33,7 @@ import com.thnki.classroom.fragments.LeavesFragment;
 import com.thnki.classroom.fragments.ResultsListFragment;
 import com.thnki.classroom.fragments.StaffListFragment;
 import com.thnki.classroom.fragments.StudentsListFragment;
+import com.thnki.classroom.fragments.SubjectsListFragment;
 import com.thnki.classroom.listeners.EventsListener;
 import com.thnki.classroom.model.Staff;
 import com.thnki.classroom.model.Students;
@@ -47,6 +48,7 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
     public static final String STAFF_LIST_FRAGMENT = "staffListFragment";
     public static final String LEAVES_LIST_FRAGMENT = "leavesListFragment";
     public static final String RESULTS_FRAGMENT = "resultsFragment";
+    public static final String SUBJECTS_FRAGMENT = "subjectsFragment";
     public static final String ATTENDANCE_FRAGMENT = "attendanceFragment";
     private int mCurrentMenu;
 
@@ -112,6 +114,9 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
             case R.id.admin_results:
                 loadFragment(RESULTS_FRAGMENT, true);
                 break;
+            case R.id.admin_subjects:
+                loadFragment(SUBJECTS_FRAGMENT, true);
+                break;
             case R.id.nav_notifications:
                 break;
             case R.id.nav_settings:
@@ -139,6 +144,8 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
                     return new LeavesFragment();
                 case RESULTS_FRAGMENT:
                     return new ResultsListFragment();
+                case SUBJECTS_FRAGMENT:
+                    return new SubjectsListFragment();
             }
         }
 
@@ -266,7 +273,7 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
         mUserId.setText(mCurrentUser.getUserId());
         mUserFullName.setText(mCurrentUser.getFullName());
 
-        ImageUtil.loadCircularImg(mActivity, mCurrentUser.getPhotoUrl(), mProfileImgView);
+        ImageUtil.loadImg(mActivity, mCurrentUser.getPhotoUrl(), mProfileImgView);
 
         headerView.setOnClickListener(new View.OnClickListener()
         {

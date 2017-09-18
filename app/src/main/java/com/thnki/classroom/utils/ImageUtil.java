@@ -12,9 +12,10 @@ import com.thnki.classroom.R;
 
 public class ImageUtil
 {
-    public static void loadCircularImg(final Context context, String url, final ImageView imageView)
+    public static void loadImg(final Context context, String url, final ImageView imageView)
     {
-        Glide.with(context).load(url).asBitmap().centerCrop().into(new BitmapImageViewTarget(imageView)
+        Glide.with(context).load(url).asBitmap().placeholder(R.mipmap.user_icon_accent)
+                .centerCrop().into(new BitmapImageViewTarget(imageView)
         {
             @Override
             protected void setResource(Bitmap resource)
@@ -27,7 +28,7 @@ public class ImageUtil
         });
     }
 
-    public static void loadImg(final Context context, String url, final ImageView imageView)
+    public static void loadSquareImg(final Context context, String url, final ImageView imageView)
     {
         Glide.with(context).load(url)
                 .asBitmap().placeholder(R.mipmap.user_icon_accent)

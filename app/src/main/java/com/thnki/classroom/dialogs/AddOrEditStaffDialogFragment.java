@@ -2,6 +2,7 @@ package com.thnki.classroom.dialogs;
 
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -123,6 +124,7 @@ public class AddOrEditStaffDialogFragment extends CustomDialogFragment
 
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child(Staff.STAFF);
             Progress.show(R.string.saving);
+            Log.d("SavingP", "" + this);
             reference.child(staffUserId).setValue(mCurrentStaff).addOnCompleteListener(new OnCompleteListener<Void>()
             {
                 @Override

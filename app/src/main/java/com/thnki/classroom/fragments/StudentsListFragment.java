@@ -90,6 +90,7 @@ public class StudentsListFragment extends ClassTabFragment implements EventsList
         super.onStart();
         Log.d(TAG, "onStart");
         mRootRef = FirebaseDatabase.getInstance().getReference();
+        ((MainActivity) getActivity()).setToolBarTitle(getString(R.string.students));
         Otto.register(this);
     }
 
@@ -311,7 +312,6 @@ public class StudentsListFragment extends ClassTabFragment implements EventsList
     {
         Log.d(TAG, "onTabSelected");
         mCurrentClass = (Classes) tab.getTag();
-        ((MainActivity) getActivity()).setToolBarTitle(mCurrentClass.getName());
         mProgress.setVisibility(View.VISIBLE);
         setUpRecyclerView();
     }
