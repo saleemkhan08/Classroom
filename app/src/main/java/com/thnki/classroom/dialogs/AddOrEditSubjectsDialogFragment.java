@@ -28,7 +28,7 @@ import com.thnki.classroom.model.ToastMsg;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class AddSubjectsDialogFragment extends CustomDialogFragment implements AdapterView.OnItemSelectedListener, View.OnTouchListener
+public class AddOrEditSubjectsDialogFragment extends CustomDialogFragment implements AdapterView.OnItemSelectedListener, View.OnTouchListener
 {
     public static final String TAG = "AddSubjectsDialogFragment";
 
@@ -50,17 +50,17 @@ public class AddSubjectsDialogFragment extends CustomDialogFragment implements A
     Subjects mCurrentSubject;
     String mCurrentClassCode;
 
-    public static AddSubjectsDialogFragment getInstance(String code)
+    public static AddOrEditSubjectsDialogFragment getInstance(String code)
     {
-        AddSubjectsDialogFragment fragment = new AddSubjectsDialogFragment();
+        AddOrEditSubjectsDialogFragment fragment = new AddOrEditSubjectsDialogFragment();
         fragment.mCurrentClassCode = code;
         return fragment;
 
     }
 
-    public static AddSubjectsDialogFragment getInstance(Subjects subject)
+    public static AddOrEditSubjectsDialogFragment getInstance(Subjects subject)
     {
-        AddSubjectsDialogFragment fragment = new AddSubjectsDialogFragment();
+        AddOrEditSubjectsDialogFragment fragment = new AddOrEditSubjectsDialogFragment();
         fragment.mCurrentSubject = subject;
         fragment.mCurrentClassCode = subject.getClassCode();
         return fragment;
@@ -94,7 +94,7 @@ public class AddSubjectsDialogFragment extends CustomDialogFragment implements A
         if (mCurrentSubject != null)
         {
             Staff staff = new Staff();
-            staff.setFullName(mCurrentSubject.getSubjectName());
+            staff.setFullName(mCurrentSubject.getTeacherName());
             staff.setPhotoUrl(mCurrentSubject.getTeacherImgUrl());
             staff.setUserId(mCurrentSubject.getTeacherCode());
 

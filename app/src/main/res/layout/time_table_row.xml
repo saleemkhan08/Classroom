@@ -49,6 +49,14 @@
                     android:textStyle="bold"/>
 
                 <TextView
+                    android:id="@+id/periodTime"
+                    android:layout_marginBottom="@dimen/userTextPadding"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="10AM - 11AM"
+                    android:textSize="12sp"/>
+
+                <TextView
                     android:id="@+id/teacherName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -15,55 +15,56 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.squareup.otto.Subscribe;
 import com.thnki.classroom.R;
-import com.thnki.classroom.dialogs.AddOrEditSubjectsDialogFragment;
+import com.thnki.classroom.dialogs.AddOrEditPeriodDialogFragment;
 import com.thnki.classroom.model.Progress;
-import com.thnki.classroom.model.Subjects;
+import com.thnki.classroom.model.TimeTable;
 import com.thnki.classroom.model.ToastMsg;
 import com.thnki.classroom.utils.ActionBarUtil;
 import com.thnki.classroom.utils.ImageUtil;
 import com.thnki.classroom.utils.Otto;
-import com.thnki.classroom.viewholders.SubjectViewHolder;
+import com.thnki.classroom.viewholders.TimeTableViewHolder;
 
 import java.util.ArrayList;
 
-import static com.thnki.classroom.utils.ActionBarUtil.SHOW_INDEPENDENT_SUBJECT_MENU;
+import static com.thnki.classroom.utils.ActionBarUtil.SHOW_INDEPENDENT_TIME_TABLE_MENU;
 
-public class SubjectsAdapter extends FirebaseRecyclerAdapter<Subjects, SubjectViewHolder>
+public class TimeTableAdapter extends FirebaseRecyclerAdapter<TimeTable, TimeTableViewHolder>
 {
-    private static final String TAG = "SubjectsAdapter";
+    private static final String TAG = "TimeTableAdapter";
     private AppCompatActivity mActivity;
     public static boolean isSelectionEnabled;
-    public ArrayList<String> mSelectedSubjects;
-    public DatabaseReference mSubjectsRef;
+    public ArrayList<String> mSelectedPeriods;
+    public Query mTimeTableRef;
 
     private boolean isSelectAll;
 
-    public static SubjectsAdapter getInstance(DatabaseReference reference, AppCompatActivity activity)
+    public static TimeTableAdapter getInstance(DatabaseReference reference, AppCompatActivity activity)
     {
-        Log.d(TAG, "SubjectsAdapter getInstance: reference : " + reference);
-        SubjectsAdapter fragment = new SubjectsAdapter(Subjects.class,
-                R.layout.subject_list_row, SubjectViewHolder.class, reference, activity);
-        fragment.mSubjectsRef = reference;
+        Log.d(TAG, "TimeTableAdapter getInstance: reference : " + reference);
+        TimeTableAdapter fragment = new TimeTableAdapter(TimeTable.class,
+                R.layout.time_table_row, TimeTableViewHolder.class, reference, activity);
+        fragment.mTimeTableRef = reference.orderByChild(TimeTable.START_TIME);
         return fragment;
     }
 
-    private SubjectsAdapter(Class<Subjects> modelClass, int modelLayout, Class<SubjectViewHolder> viewHolderClass,
-                            Query ref, AppCompatActivity activity)
+    private TimeTableAdapter(Class<TimeTable> modelClass, int modelLayout, Class<TimeTableViewHolder> viewHolderClass,
+                             Query ref, AppCompatActivity activity)
     {
         super(modelClass, modelLayout, viewHolderClass, ref);
-        Log.d(TAG, "SubjectsAdapter Constructor");
+        Log.d(TAG, "TimeTableAdapter Constructor");
         mActivity = activity;
     }
 
     @Override
-    protected void populateViewHolder(final SubjectViewHolder viewHolder, final Subjects model, int position)
+    protected void populateViewHolder(final TimeTableViewHolder viewHolder, final TimeTable model, int position)
     {
         Log.d(TAG, "populateViewHolder : " + position);
-        String imageUrl = model.getTeacherImgUrl();
+        String imageUrl = model.getTeacherPhotoUrl();
         ImageUtil.loadImg(viewHolder.itemView.getContext(), imageUrl, viewHolder.mTeacherImage);
 
         viewHolder.mSubjectName.setText(model.getSubjectName());
         viewHolder.mClassTeacherName.setText(model.getTeacherName());
+        viewHolder.mPeriodTime.setText(model.getStartTime() + " - " + model.getEndTime());
         Log.d(TAG, this + " : isSelectionEnabled : " + isSelectionEnabled);
         viewHolder.mCheckBox.setVisibility(isSelectionEnabled ? View.VISIBLE : View.GONE);
         viewHolder.mOptionsIconContainer.setVisibility(isSelectionEnabled ? View.GONE : View.VISIBLE);
@@ -76,11 +77,11 @@ public class SubjectsAdapter extends FirebaseRecyclerAdapter<Subjects, SubjectVi
                 Log.d(TAG, "onCheckedChanged : " + isChecked);
                 if (isChecked)
                 {
-                    mSelectedSubjects.add(model.getSubjectCode());
+                    mSelectedPeriods.add(model.getStartTimeKey());
                 }
                 else
                 {
-                    mSelectedSubjects.remove(model.getSubjectCode());
+                    mSelectedPeriods.remove(model.getStartTimeKey());
                 }
             }
         });
@@ -99,7 +100,7 @@ public class SubjectsAdapter extends FirebaseRecyclerAdapter<Subjects, SubjectVi
             public boolean onLongClick(View view)
             {
                 Log.d(TAG, this + ", onLongClick, isSelectionEnabled : " + isSelectionEnabled);
-                Otto.post(ActionBarUtil.SHOW_MULTIPLE_SUBJECT_MENU);
+                Otto.post(ActionBarUtil.SHOW_MULTIPLE_TIME_TABLE_MENU);
                 enableSelection();
                 return true;
             }
@@ -110,8 +111,8 @@ public class SubjectsAdapter extends FirebaseRecyclerAdapter<Subjects, SubjectVi
     private void enableSelection()
     {
         isSelectionEnabled = true;
-        mSelectedSubjects = new ArrayList<>();
-        Otto.register(SubjectsAdapter.this);
+        mSelectedPeriods = new ArrayList<>();
+        Otto.register(TimeTableAdapter.this);
         notifyDataSetChanged();
     }
 
@@ -119,14 +120,14 @@ public class SubjectsAdapter extends FirebaseRecyclerAdapter<Subjects, SubjectVi
     public void reload(String str)
     {
         Log.d(TAG, "reload : " + str);
-        if (str.equals(SHOW_INDEPENDENT_SUBJECT_MENU))
+        if (str.equals(SHOW_INDEPENDENT_TIME_TABLE_MENU))
         {
             notifyDataSetChanged();
             Otto.unregister(this);
         }
     }
 
-    private void configureOptions(final SubjectViewHolder holder, final Subjects subject)
+    private void configureOptions(final TimeTableViewHolder holder, final TimeTable timeTable)
     {
         holder.mOptionsIconContainer.setOnClickListener(new View.OnClickListener()
         {
@@ -143,10 +144,10 @@ public class SubjectsAdapter extends FirebaseRecyclerAdapter<Subjects, SubjectVi
                         switch (item.getItemId())
                         {
                             case R.id.action_edit:
-                                editClasses(subject);
+                                editClasses(timeTable);
                                 break;
                             case R.id.action_delete:
-                                confirmDelete(subject);
+                                confirmDelete(timeTable);
                                 break;
                         }
                         return true;
@@ -163,10 +164,10 @@ public class SubjectsAdapter extends FirebaseRecyclerAdapter<Subjects, SubjectVi
         notifyDataSetChanged();
     }
 
-    private void confirmDelete(Subjects subject)
+    private void confirmDelete(TimeTable timeTable)
     {
         Progress.show(R.string.deleting);
-        mSubjectsRef.child(subject.getSubjectCode()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>()
+        mTimeTableRef.getRef().child(timeTable.getStartTimeKey()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>()
         {
             @Override
             public void onComplete(@NonNull Task<Void> task)
@@ -184,9 +185,9 @@ public class SubjectsAdapter extends FirebaseRecyclerAdapter<Subjects, SubjectVi
         });
     }
 
-    private void editClasses(Subjects subject)
+    private void editClasses(TimeTable timeTable)
     {
-        AddOrEditSubjectsDialogFragment fragment = AddOrEditSubjectsDialogFragment.getInstance(subject);
-        fragment.show(mActivity.getSupportFragmentManager(), AddOrEditSubjectsDialogFragment.TAG);
+        AddOrEditPeriodDialogFragment fragment = AddOrEditPeriodDialogFragment.getInstance(timeTable);
+        fragment.show(mActivity.getSupportFragmentManager(), AddOrEditPeriodDialogFragment.TAG);
     }
 }

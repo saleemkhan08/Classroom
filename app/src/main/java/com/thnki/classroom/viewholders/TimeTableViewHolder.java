@@ -11,7 +11,7 @@ import com.thnki.classroom.R;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class SubjectViewHolder extends RecyclerView.ViewHolder
+public class TimeTableViewHolder extends RecyclerView.ViewHolder
 {
     @Bind(R.id.teacherImage)
     public ImageView mTeacherImage;
@@ -28,9 +28,12 @@ public class SubjectViewHolder extends RecyclerView.ViewHolder
     @Bind(R.id.optionsIconContainer)
     public ImageView mOptionsIconContainer;
 
+    @Bind(R.id.periodTime)
+    public TextView mPeriodTime;
+
     public View mItemView;
 
-    public SubjectViewHolder(View itemView)
+    public TimeTableViewHolder(View itemView)
     {
         super(itemView);
         mItemView = itemView;

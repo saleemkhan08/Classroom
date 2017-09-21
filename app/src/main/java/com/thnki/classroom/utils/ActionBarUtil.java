@@ -17,6 +17,8 @@ public class ActionBarUtil
     public static final String SHOW_MULTIPLE_SUBJECT_MENU = "showMultipleSubjectMenu";
     public static final String SHOW_ATTENDANCE_MENU = "showAttendanceMenu";
     public static final String SHOW_ADMIN_LEAVES_MENU = "showAdminLeavesMenu";
+    public static final String SHOW_INDEPENDENT_TIME_TABLE_MENU = "showIndependentTimeTableMenu";
+    public static final String SHOW_MULTIPLE_TIME_TABLE_MENU = "showMultipleTimeTableMenu";
     Activity mActivity;
     MenuInflater mMenuInflater;
     Menu mMenu;
@@ -50,6 +52,8 @@ public class ActionBarUtil
                 break;
             case SHOW_MULTIPLE_SUBJECT_MENU:
                 loadNewMenu(R.menu.multiple_subject_menu);
+            case SHOW_MULTIPLE_TIME_TABLE_MENU:
+                loadNewMenu(R.menu.multiple_period_menu);
                 break;
             case SHOW_ATTENDANCE_MENU:
                 loadNewMenu(R.menu.attendance_menu);
@@ -59,6 +63,7 @@ public class ActionBarUtil
                 break;
             case NO_MENU:
             case SHOW_INDEPENDENT_SUBJECT_MENU:
+            case SHOW_INDEPENDENT_TIME_TABLE_MENU:
                 mMenu.clear();
                 break;
         }

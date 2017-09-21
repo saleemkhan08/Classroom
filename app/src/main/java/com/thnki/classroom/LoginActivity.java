@@ -49,6 +49,10 @@ public class LoginActivity extends AppCompatActivity implements OnDismissListene
 
     @Bind(R.id.loginContainer)
     View mLoginButtonContainer;
+
+    @Bind(R.id.pageIndicatorView)
+    View mPageIndicatorView;
+
     private SharedPreferences mSharedPreferences;
     private FirebaseAuth mAuth;
     private LoginDialogFragment mFragment;
@@ -73,6 +77,7 @@ public class LoginActivity extends AppCompatActivity implements OnDismissListene
         if (mSharedPreferences.getBoolean(LOGIN_STATUS, false))
         {
             mLoginButtonContainer.setVisibility(View.GONE);
+            mPageIndicatorView.setVisibility(View.GONE);
             Log.d(TAG, "Launching MainActivity : through Handler");
             new Handler().postDelayed(new Runnable()
             {
