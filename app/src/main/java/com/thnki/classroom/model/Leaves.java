@@ -209,7 +209,9 @@ public class Leaves
         return "" + calendar.getYear() + get2DigitNum(calendar.getMonth() + 2)
                 + "10";
     }
-    public static Calendar getCalendar(String date){
+
+    public static Calendar getCalendar(String date)
+    {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT, Locale.ENGLISH);
         try
@@ -222,5 +224,12 @@ public class Leaves
         }
 
         return calendar;
+    }
+
+    public static String getDbKeyDateTime(Calendar calendar)
+    {
+        return "" + calendar.get(Calendar.YEAR) + get2DigitNum(calendar.get(Calendar.MONTH) + 1)
+                + get2DigitNum(calendar.get(Calendar.DAY_OF_MONTH)) + get2DigitNum(calendar.get(Calendar.MINUTE))
+                + get2DigitNum(calendar.get(Calendar.SECOND));
     }
 }

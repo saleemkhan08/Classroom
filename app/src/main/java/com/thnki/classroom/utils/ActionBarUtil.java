@@ -19,6 +19,7 @@ public class ActionBarUtil
     public static final String SHOW_ADMIN_LEAVES_MENU = "showAdminLeavesMenu";
     public static final String SHOW_INDEPENDENT_TIME_TABLE_MENU = "showIndependentTimeTableMenu";
     public static final String SHOW_MULTIPLE_TIME_TABLE_MENU = "showMultipleTimeTableMenu";
+    public static final String SHOW_INDEPENDENT_NOTES_MENU = "showIndependentNotesMenu";
     Activity mActivity;
     MenuInflater mMenuInflater;
     Menu mMenu;

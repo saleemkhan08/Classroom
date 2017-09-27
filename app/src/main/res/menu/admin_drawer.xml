@@ -9,34 +9,39 @@
             android:title="@string/classes"/>
         <item
             android:id="@+id/admin_subjects"
-            android:icon="@mipmap/courses"
+            android:icon="@mipmap/subjects"
             android:orderInCategory="1"
             android:title="@string/subjects"/>
         <item
+            android:id="@+id/admin_notes"
+            android:icon="@mipmap/notebook"
+            android:orderInCategory="2"
+            android:title="@string/notes"/>
+        <item
             android:id="@+id/admin_students"
             android:icon="@mipmap/student"
-            android:orderInCategory="2"
+            android:orderInCategory="3"
             android:title="@string/students"/>
         <item
             android:id="@+id/admin_staff"
             android:icon="@mipmap/staff"
-            android:orderInCategory="3"
+            android:orderInCategory="4"
             android:title="@string/staff"/>
         <item
             android:id="@+id/admin_leaves"
             android:icon="@mipmap/calendar"
-            android:orderInCategory="4"
+            android:orderInCategory="5"
             android:title="@string/leaves"/>
         <item
             android:id="@+id/admin_time_table"
             android:icon="@mipmap/timetable"
-            android:orderInCategory="5"
-            android:title="@string/timetables"/>
-        <item
-            android:id="@+id/admin_results"
-            android:icon="@mipmap/results"
             android:orderInCategory="6"
-            android:title="@string/results"/>
+            android:title="@string/timetables"/>
+        <!--<item-->
+            <!--android:id="@+id/admin_results"-->
+            <!--android:icon="@mipmap/results"-->
+            <!--android:orderInCategory="6"-->
+            <!--android:title="@string/results"/>-->
     </group>
 
     <item android:title="@string/accounts"

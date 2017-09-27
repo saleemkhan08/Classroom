@@ -8,6 +8,7 @@
     <color name="background">#b6b6b6</color>
     <color name="transparentWhite">#99ffffff</color>
     <color name="dark_grey">#ccc</color>
+    <color name="black_overlay">#55000000</color>
 
     <array name="progressColors">
         <item>@color/colorPrimary</item>

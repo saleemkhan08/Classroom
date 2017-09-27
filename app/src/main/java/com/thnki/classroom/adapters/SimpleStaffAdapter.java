@@ -33,7 +33,7 @@ public class SimpleStaffAdapter extends FirebaseRecyclerAdapter<Staff, StaffView
     protected void populateViewHolder(final StaffViewHolder viewHolder, final Staff model, int position)
     {
         String imageUrl = model.getPhotoUrl();
-        ImageUtil.loadImg(viewHolder.itemView.getContext(), imageUrl, viewHolder.mImageView);
+        ImageUtil.loadCircularImg(viewHolder.itemView.getContext(), imageUrl, viewHolder.mImageView);
 
         viewHolder.mFullName.setText(model.getFullName());
         viewHolder.mUserId.setText(model.getUserId());

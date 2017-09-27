@@ -1,6 +1,7 @@
 package com.thnki.classroom.dialogs;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -32,6 +33,8 @@ public abstract class CustomDialogFragment extends DialogFragment implements Tab
     private View mBottomPadding;
     private TabLayout mTabLayout;
     private LinearLayout mDialogContainer;
+    private View mDialogFabContainer;
+    private FloatingActionButton mDialogFab;
 
     public CustomDialogFragment()
     {
@@ -56,6 +59,8 @@ public abstract class CustomDialogFragment extends DialogFragment implements Tab
         mBottomPadding = parentView.findViewById(R.id.bottomPadding);
         mSubTitle = (TextView) parentView.findViewById(dialogSubTitle);
         mTabLayout = (TabLayout) parentView.findViewById(R.id.classesTab);
+        mDialogFabContainer = parentView.findViewById(R.id.dialogFabContainer);
+        mDialogFab = (FloatingActionButton) parentView.findViewById(R.id.dialogFab);
         parentView.findViewById(R.id.closeDialog).setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -194,5 +199,11 @@ public abstract class CustomDialogFragment extends DialogFragment implements Tab
         ViewGroup.LayoutParams params = mDialogContainer.getLayoutParams();
         params.height = MATCH_PARENT;
         mDialogContainer.setLayoutParams(params);
+    }
+
+    public void setDialogFabImg(int dialogFabImg)
+    {
+        mDialogFabContainer.setVisibility(View.VISIBLE);
+        mDialogFab.setImageResource(dialogFabImg);
     }
 }

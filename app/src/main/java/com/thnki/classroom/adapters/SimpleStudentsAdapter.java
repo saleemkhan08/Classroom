@@ -35,7 +35,7 @@ public class SimpleStudentsAdapter extends FirebaseRecyclerAdapter<Students, Stu
     {
         Log.d(TAG, "populateViewHolder : " + position);
         String imageUrl = model.getPhotoUrl();
-        ImageUtil.loadImg(viewHolder.itemView.getContext(), imageUrl, viewHolder.mImageView);
+        ImageUtil.loadCircularImg(viewHolder.itemView.getContext(), imageUrl, viewHolder.mImageView);
 
         viewHolder.mFullName.setText(model.getFullName());
         viewHolder.mUserId.setText(model.getUserId());

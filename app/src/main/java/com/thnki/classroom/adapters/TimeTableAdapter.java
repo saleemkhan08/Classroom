@@ -60,7 +60,7 @@ public class TimeTableAdapter extends FirebaseRecyclerAdapter<TimeTable, TimeTab
     {
         Log.d(TAG, "populateViewHolder : " + position);
         String imageUrl = model.getTeacherPhotoUrl();
-        ImageUtil.loadImg(viewHolder.itemView.getContext(), imageUrl, viewHolder.mTeacherImage);
+        ImageUtil.loadCircularImg(viewHolder.itemView.getContext(), imageUrl, viewHolder.mTeacherImage);
 
         viewHolder.mSubjectName.setText(model.getSubjectName());
         viewHolder.mClassTeacherName.setText(model.getTeacherName());

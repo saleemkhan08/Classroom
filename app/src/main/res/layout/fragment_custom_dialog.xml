@@ -1,10 +1,11 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#eee"
-                android:minWidth="300dp"
-                android:orientation="vertical">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#eee"
+    android:minWidth="320dp"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/dialogHeader"
@@ -13,8 +14,8 @@
         android:background="@color/colorPrimary">
 
         <RelativeLayout
-            android:layout_width="match_parent"
             android:id="@+id/titleContainer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView
@@ -64,59 +65,93 @@
 
         <android.support.design.widget.TabLayout
             android:id="@+id/classesTab"
-            android:layout_below="@+id/titleContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/titleContainer"
             android:background="@color/colorPrimary"
-            app:tabMode="scrollable"
             android:visibility="gone"
+            app:tabMode="scrollable"
             app:tabSelectedTextColor="@color/white"
             app:tabTextColor="@color/gray"/>
     </RelativeLayout>
 
 
-    <LinearLayout
-        android:id="@+id/dialogContainer"
+    <ScrollView
+        android:id="@+id/dialogScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/dialogHeader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="100dp"
-        android:orientation="vertical">
-    </LinearLayout>
+        android:minHeight="100dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/dialogContainer"
-        android:background="#ccc"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/submitBtn"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_drawable"
-            android:clickable="true"
-            android:gravity="center">
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/submitBtnTxt"
+            <LinearLayout
+                android:id="@+id/dialogContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="100dp"
+                android:orientation="vertical">
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dialogContainer"
+                android:background="#ccc"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/submitBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_drawable"
+                    android:clickable="true"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/submitBtnTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:gravity="center"
+                        android:padding="5dp"
+                        android:text="@string/submit"
+                        android:textAppearance="?android:textAppearanceMedium"
+                        android:textColor="@color/colorAccent"
+                        android:textStyle="bold"/>
+
+                    <ImageView
+                        android:id="@+id/submitBtnImg"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:padding="9dp"
+                        android:src="@mipmap/save_button"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="@string/submit"
-                android:textAppearance="?android:textAppearanceMedium"
-                android:textColor="@color/colorAccent"
-                android:textStyle="bold"/>
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:clickable="true"
+                android:id="@+id/dialogFabContainer"
+                android:clipToPadding="false"
+                android:paddingBottom="20dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="10dp"
+                android:visibility="gone">
 
-            <ImageView
-                android:id="@+id/submitBtnImg"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:padding="9dp"
-                android:src="@mipmap/save_button"/>
-        </LinearLayout>
-    </LinearLayout>
-
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/dialogFab"
+                    android:src="@mipmap/ic_photo_camera_white_48dp"
+                    app:fabSize="mini"/>
+            </LinearLayout>
+        </RelativeLayout>
+    </ScrollView>
 </RelativeLayout>

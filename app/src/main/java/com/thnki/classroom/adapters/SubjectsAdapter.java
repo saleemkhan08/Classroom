@@ -60,7 +60,7 @@ public class SubjectsAdapter extends FirebaseRecyclerAdapter<Subjects, SubjectVi
     {
         Log.d(TAG, "populateViewHolder : " + position);
         String imageUrl = model.getTeacherImgUrl();
-        ImageUtil.loadImg(viewHolder.itemView.getContext(), imageUrl, viewHolder.mTeacherImage);
+        ImageUtil.loadCircularImg(viewHolder.itemView.getContext(), imageUrl, viewHolder.mTeacherImage);
 
         viewHolder.mSubjectName.setText(model.getSubjectName());
         viewHolder.mClassTeacherName.setText(model.getTeacherName());

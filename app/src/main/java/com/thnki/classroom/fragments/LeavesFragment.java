@@ -176,7 +176,7 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
 
     private void showUserDetails(String url, String uid, String name)
     {
-        ImageUtil.loadImg(getActivity(), url, mProfileImg);
+        ImageUtil.loadCircularImg(getActivity(), url, mProfileImg);
         mProfileId.setText(uid);
         mProfileName.setText(name);
 

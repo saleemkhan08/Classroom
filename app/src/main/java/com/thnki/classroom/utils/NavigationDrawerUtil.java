@@ -30,7 +30,7 @@ import com.thnki.classroom.ProfileActivity;
 import com.thnki.classroom.R;
 import com.thnki.classroom.fragments.ClassesListFragment;
 import com.thnki.classroom.fragments.LeavesFragment;
-import com.thnki.classroom.fragments.ResultsListFragment;
+import com.thnki.classroom.fragments.NotesFragment;
 import com.thnki.classroom.fragments.StaffListFragment;
 import com.thnki.classroom.fragments.StudentsListFragment;
 import com.thnki.classroom.fragments.SubjectsListFragment;
@@ -48,7 +48,7 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
     public static final String CLASSES_LIST_FRAGMENT = "classesListFragment";
     public static final String STAFF_LIST_FRAGMENT = "staffListFragment";
     public static final String LEAVES_LIST_FRAGMENT = "leavesListFragment";
-    public static final String RESULTS_FRAGMENT = "resultsFragment";
+    public static final String NOTES_FRAGMENT = "notesFragment";
     public static final String SUBJECTS_FRAGMENT = "subjectsFragment";
     public static final String ATTENDANCE_FRAGMENT = "attendanceFragment";
     public static final String TIME_TABLE_FRAGMENT = "timeTableFragment";
@@ -113,8 +113,8 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
             case R.id.admin_leaves:
                 loadFragment(LEAVES_LIST_FRAGMENT, true);
                 break;
-            case R.id.admin_results:
-                loadFragment(RESULTS_FRAGMENT, true);
+            case R.id.admin_notes:
+                loadFragment(NOTES_FRAGMENT, true);
                 break;
             case R.id.admin_subjects:
                 loadFragment(SUBJECTS_FRAGMENT, true);
@@ -147,8 +147,8 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
                     return new StaffListFragment();
                 case LEAVES_LIST_FRAGMENT:
                     return new LeavesFragment();
-                case RESULTS_FRAGMENT:
-                    return new ResultsListFragment();
+                case NOTES_FRAGMENT:
+                    return new NotesFragment();
                 case SUBJECTS_FRAGMENT:
                     return new SubjectsListFragment();
                 case TIME_TABLE_FRAGMENT:
@@ -280,7 +280,7 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
         mUserId.setText(mCurrentUser.getUserId());
         mUserFullName.setText(mCurrentUser.getFullName());
 
-        ImageUtil.loadImg(mActivity, mCurrentUser.getPhotoUrl(), mProfileImgView);
+        ImageUtil.loadCircularImg(mActivity, mCurrentUser.getPhotoUrl(), mProfileImgView);
 
         headerView.setOnClickListener(new View.OnClickListener()
         {

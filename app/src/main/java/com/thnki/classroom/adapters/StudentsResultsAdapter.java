@@ -22,9 +22,9 @@ import java.util.Map;
 
 import static com.thnki.classroom.utils.ActionBarUtil.SHOW_INDEPENDENT_STUDENTS_MENU;
 
-public class StudentsAdapter extends FirebaseRecyclerAdapter<Students, StudentViewHolder>
+public class StudentsResultsAdapter extends FirebaseRecyclerAdapter<Students, StudentViewHolder>
 {
-    private static final String TAG = "StudentsAdapter";
+    private static final String TAG = "StudentsResultsAdapter";
     private Activity mActivity;
     public static boolean isSelectionEnabled;
     public ArrayList<String> mSelectedStudents;
@@ -32,15 +32,15 @@ public class StudentsAdapter extends FirebaseRecyclerAdapter<Students, StudentVi
 
     private boolean isSelectAll;
 
-    public static StudentsAdapter getInstance(DatabaseReference reference, Activity activity)
+    public static StudentsResultsAdapter getInstance(DatabaseReference reference, Activity activity)
     {
         Log.d(TAG, "StudentsAdapter getInstance: reference : " + reference);
-        return new StudentsAdapter(Students.class,
+        return new StudentsResultsAdapter(Students.class,
                 R.layout.student_list_row, StudentViewHolder.class, reference, activity);
     }
 
-    private StudentsAdapter(Class<Students> modelClass, int modelLayout, Class<StudentViewHolder> viewHolderClass,
-                            Query ref, Activity activity)
+    private StudentsResultsAdapter(Class<Students> modelClass, int modelLayout, Class<StudentViewHolder> viewHolderClass,
+                                   Query ref, Activity activity)
     {
         super(modelClass, modelLayout, viewHolderClass, ref);
         Log.d(TAG, "StudentsAdapter Constructor");
@@ -104,7 +104,7 @@ public class StudentsAdapter extends FirebaseRecyclerAdapter<Students, StudentVi
         isSelectionEnabled = true;
         mSelectedStudents = new ArrayList<>();
         mUnSelectedStudents = new HashMap<>();
-        Otto.register(StudentsAdapter.this);
+        Otto.register(StudentsResultsAdapter.this);
         notifyDataSetChanged();
     }
 
