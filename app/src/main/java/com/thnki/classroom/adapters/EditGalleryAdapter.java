@@ -3,6 +3,7 @@ package com.thnki.classroom.adapters;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +20,22 @@ import java.util.Collections;
 
 public class EditGalleryAdapter extends RecyclerView.Adapter<GalleryEditorItemViewHolder> implements IOnItemMovedListener
 {
+    private static final String TAG = "EditGalleryAdapter";
     private ArrayList mGalleryImagesList;
 
     public EditGalleryAdapter(ArrayList<Uri> galleryImagesList, Notes mNotes)
     {
         mGalleryImagesList = galleryImagesList;
-        if (mNotes != null)
+        if (mNotes != null && mGalleryImagesList != null)
         {
-            mGalleryImagesList.addAll(mNotes.getNotesImages());
+            try
+            {
+                mGalleryImagesList.addAll(mNotes.getNotesImages());
+            }
+            catch (NullPointerException e)
+            {
+                Log.d(TAG, e.getMessage());
+            }
         }
     }
 

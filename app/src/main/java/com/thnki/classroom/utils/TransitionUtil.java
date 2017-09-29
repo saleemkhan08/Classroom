@@ -1,6 +1,7 @@
 package com.thnki.classroom.utils;
 
 import android.os.Build;
+import android.os.Handler;
 import android.transition.Explode;
 import android.transition.Slide;
 import android.transition.TransitionManager;
@@ -27,6 +28,29 @@ public class TransitionUtil
         {
             TransitionManager.beginDelayedTransition(container);
         }
+    }
+
+    public static void slideTransition(final ViewGroup container, final Runnable runnable)
+    {
+        Handler handler = new Handler();
+        handler.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if (Build.VERSION.SDK_INT >= 21)
+                {
+                    Slide slide = new Slide();
+                    TransitionManager.beginDelayedTransition(container, slide);
+                    runnable.run();
+                }
+                else if (Build.VERSION.SDK_INT >= 19)
+                {
+                    TransitionManager.beginDelayedTransition(container);
+                    runnable.run();
+                }
+            }
+        });
     }
 
     public static void explodeTransition(ViewGroup container)

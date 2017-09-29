@@ -21,6 +21,7 @@ import com.thnki.classroom.model.TimeTable;
 import com.thnki.classroom.model.ToastMsg;
 import com.thnki.classroom.utils.ActionBarUtil;
 import com.thnki.classroom.utils.ImageUtil;
+import com.thnki.classroom.utils.NavigationDrawerUtil;
 import com.thnki.classroom.utils.Otto;
 import com.thnki.classroom.viewholders.TimeTableViewHolder;
 
@@ -64,27 +65,8 @@ public class TimeTableAdapter extends FirebaseRecyclerAdapter<TimeTable, TimeTab
 
         viewHolder.mSubjectName.setText(model.getSubjectName());
         viewHolder.mClassTeacherName.setText(model.getTeacherName());
+
         viewHolder.mPeriodTime.setText(model.getStartTime() + " - " + model.getEndTime());
-        Log.d(TAG, this + " : isSelectionEnabled : " + isSelectionEnabled);
-        viewHolder.mCheckBox.setVisibility(isSelectionEnabled ? View.VISIBLE : View.GONE);
-        viewHolder.mOptionsIconContainer.setVisibility(isSelectionEnabled ? View.GONE : View.VISIBLE);
-        viewHolder.mCheckBox.setChecked(isSelectAll);
-        viewHolder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-        {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked)
-            {
-                Log.d(TAG, "onCheckedChanged : " + isChecked);
-                if (isChecked)
-                {
-                    mSelectedPeriods.add(model.getStartTimeKey());
-                }
-                else
-                {
-                    mSelectedPeriods.remove(model.getStartTimeKey());
-                }
-            }
-        });
         viewHolder.itemView.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -94,18 +76,46 @@ public class TimeTableAdapter extends FirebaseRecyclerAdapter<TimeTable, TimeTab
             }
         });
 
-        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener()
+        if (NavigationDrawerUtil.isAdmin)
         {
-            @Override
-            public boolean onLongClick(View view)
+            Log.d(TAG, this + " : isSelectionEnabled : " + isSelectionEnabled);
+            viewHolder.mCheckBox.setVisibility(isSelectionEnabled ? View.VISIBLE : View.GONE);
+            viewHolder.mOptionsIconContainer.setVisibility(isSelectionEnabled ? View.GONE : View.VISIBLE);
+            viewHolder.mCheckBox.setChecked(isSelectAll);
+            viewHolder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
             {
-                Log.d(TAG, this + ", onLongClick, isSelectionEnabled : " + isSelectionEnabled);
-                Otto.post(ActionBarUtil.SHOW_MULTIPLE_TIME_TABLE_MENU);
-                enableSelection();
-                return true;
-            }
-        });
-        configureOptions(viewHolder, model);
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked)
+                {
+                    Log.d(TAG, "onCheckedChanged : " + isChecked);
+                    if (isChecked)
+                    {
+                        mSelectedPeriods.add(model.getStartTimeKey());
+                    }
+                    else
+                    {
+                        mSelectedPeriods.remove(model.getStartTimeKey());
+                    }
+                }
+            });
+            viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener()
+            {
+                @Override
+                public boolean onLongClick(View view)
+                {
+                    Log.d(TAG, this + ", onLongClick, isSelectionEnabled : " + isSelectionEnabled);
+                    Otto.post(ActionBarUtil.SHOW_MULTIPLE_TIME_TABLE_MENU);
+                    enableSelection();
+                    return true;
+                }
+            });
+            configureOptions(viewHolder, model);
+        }
+        else
+        {
+            viewHolder.mCheckBox.setVisibility(View.GONE);
+            viewHolder.mOptionsIconContainer.setVisibility(View.GONE);
+        }
     }
 
     private void enableSelection()

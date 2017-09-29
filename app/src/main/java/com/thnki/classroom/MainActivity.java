@@ -58,12 +58,6 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         mNavigationDrawerUtil = new NavigationDrawerUtil(this);
-    }
-
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
         Otto.register(this);
     }
 
@@ -77,9 +71,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onStop()
+    protected void onDestroy()
     {
-        super.onStop();
+        super.onDestroy();
         mActionBarUtil.unRegisterOtto();
         Otto.unregister(this);
     }
@@ -148,6 +142,8 @@ public class MainActivity extends AppCompatActivity
     @Subscribe
     public void progressDialog(Progress progress)
     {
+        Log.d("UploadIssue", "Otto Subscribe progressDialog " + progress.getMsg()
+                + ", progress.toBeShown() : " + progress.toBeShown());
         if (progress.getMsg() != 0)
         {
             Log.d("progressDialog", "" + getString(progress.getMsg()));

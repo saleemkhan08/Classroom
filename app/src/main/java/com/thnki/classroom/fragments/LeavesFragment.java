@@ -60,12 +60,15 @@ import butterknife.OnClick;
 import static com.thnki.classroom.LoginActivity.LOGIN_USER_ID;
 import static com.thnki.classroom.R.string.leaves;
 
-public class LeavesFragment extends Fragment implements EventsListener, ValueEventListener, OnDateSelectedListener
+public class LeavesFragment extends Fragment implements EventsListener, ValueEventListener, OnDateSelectedListener, DatePickerDialog.OnDateSetListener
 {
     public static final String TAG = "LeavesFragment";
 
     @Bind(R.id.leavesList)
     MaterialCalendarView mLeavesCalender;
+
+    @Bind(R.id.userDetails)
+    View userDetails;
 
     @Bind(R.id.profileName)
     TextView mProfileName;
@@ -85,8 +88,15 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
     private String mDateStartText;
     private String mDateEndText;
 
-    @Bind(R.id.selectMonth)
+    @Bind(R.id.selectMonthBtn)
     Button mMonthButton;
+
+    @Bind(R.id.selectMonthTxt)
+    TextView selectMonthTxt;
+
+    @Bind(R.id.selectMonthContainer)
+    View selectMonthContainer;
+
     private ArrayList<CalendarDay> mLeavesList;
     private DatabaseReference mRootRef;
     private String mCurrentUserId;
@@ -118,12 +128,31 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
 
         showCurrentUserLeaves();
 
+        Activity activity = getActivity();
+        if (activity instanceof MainActivity)
+        {
+            ((MainActivity) activity).setToolBarTitle(getString(leaves));
+            ((MainActivity) activity).updateEventsListener(this);
+            if (NavigationDrawerUtil.isStudent)
+            {
+                Otto.post(ActionBarUtil.NO_MENU);
+                userDetails.setVisibility(View.GONE);
+                mMonthButton.setVisibility(View.GONE);
+                selectMonthContainer.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                Otto.post(ActionBarUtil.SHOW_ADMIN_LEAVES_MENU);
+            }
+        }
+
         return parentView;
     }
 
     private void setMonthButtonTxt(int month, int year)
     {
         mMonthButton.setText(MonthYearPickerDialog.MONTH_ARRAY[month] + "-" + year);
+        selectMonthTxt.setText(MonthYearPickerDialog.MONTH_ARRAY[month] + "-" + year);
     }
 
     private void setStartEndDateText(Calendar calendar)
@@ -155,7 +184,7 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
                 });
                 break;
             default:
-                mRootRef.child(Students.STUDENTS).child(mCurrentUserId).addValueEventListener(new ValueEventListener()
+                mRootRef.child(Students.STUDENTS).child(NavigationDrawerUtil.getClassId()).child(mCurrentUserId).addValueEventListener(new ValueEventListener()
                 {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot)
@@ -192,19 +221,6 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
     }
 
     @Override
-    public void onResume()
-    {
-        super.onResume();
-        Activity activity = getActivity();
-        if (activity instanceof MainActivity)
-        {
-            ((MainActivity) activity).setToolBarTitle(getString(leaves));
-            ((MainActivity) activity).updateEventsListener(this);
-            Otto.post(ActionBarUtil.SHOW_ADMIN_LEAVES_MENU);
-        }
-    }
-
-    @Override
     public void onStop()
     {
         super.onStop();
@@ -220,7 +236,7 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
     @Override
     public int getMenuItemId()
     {
-        return R.id.admin_leaves;
+        return R.id.launch_leaves_fragment;
     }
 
     @Override
@@ -316,36 +332,55 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
         }
     }
 
-    @OnClick(R.id.selectMonth)
+    @OnClick(R.id.increaseMonth)
+    public void increaseMonth()
+    {
+        CalendarDay day = mLeavesCalender.getCurrentDate();
+        Calendar calendar = day.getCalendar();
+        calendar.add(Calendar.MONTH, 1);
+
+        onDateSet(null, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 0);
+    }
+
+    @OnClick(R.id.decreaseMonth)
+    public void decreaseMonth()
+    {
+        CalendarDay day = mLeavesCalender.getCurrentDate();
+        Calendar calendar = day.getCalendar();
+        calendar.add(Calendar.MONTH, -1);
+
+        onDateSet(null, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 0);
+    }
+
+    @OnClick({R.id.selectMonthBtn, R.id.selectMonthTxt})
     public void selectMonth()
     {
         MonthYearPickerDialog pd = MonthYearPickerDialog.getInstance(mLeavesCalender.getCurrentDate());
-        pd.setListener(new DatePickerDialog.OnDateSetListener()
+        pd.setListener(this);
+        pd.show(getFragmentManager(), "MonthYearPickerDialog");
+    }
+
+    @Override
+    public void onDateSet(DatePicker datePicker, int year, int month, int i2)
+    {
+        mLeavesCalender.setVisibility(View.INVISIBLE);
+        final Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, 1);
+        mLeavesCalender.setCurrentDate(calendar);
+        setMonthButtonTxt(month, year);
+        mProgress.setVisibility(View.VISIBLE);
+        new Handler().postDelayed(new Runnable()
         {
             @Override
-            public void onDateSet(DatePicker datePicker, int year, int month, int i2)
+            public void run()
             {
-                mLeavesCalender.setVisibility(View.INVISIBLE);
-                final Calendar calendar = Calendar.getInstance();
-                calendar.set(year, month, 1);
-                mLeavesCalender.setCurrentDate(calendar);
-                setMonthButtonTxt(month, year);
-                mProgress.setVisibility(View.VISIBLE);
-                new Handler().postDelayed(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        mDateStartText = Leaves.getDbKeyStartDate(calendar);
-                        mDateEndText = Leaves.getDbKeyEndDate(calendar);
-                        showLeaves();
-                        mLeavesCalender.setVisibility(View.VISIBLE);
-                        mProgress.setVisibility(View.GONE);
-                    }
-                }, 1000);
+                mDateStartText = Leaves.getDbKeyStartDate(calendar);
+                mDateEndText = Leaves.getDbKeyEndDate(calendar);
+                showLeaves();
+                mLeavesCalender.setVisibility(View.VISIBLE);
+                mProgress.setVisibility(View.GONE);
             }
-        });
-        pd.show(getFragmentManager(), "MonthYearPickerDialog");
+        }, 500);
     }
 
     @Subscribe

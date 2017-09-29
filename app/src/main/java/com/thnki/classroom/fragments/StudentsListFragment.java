@@ -2,7 +2,6 @@ package com.thnki.classroom.fragments;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
@@ -140,29 +139,21 @@ public class StudentsListFragment extends ClassTabFragment implements EventsList
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy)
             {
-                if (dy > 0 || dy < 0 && mFabContainer.isShown())
+                if (dy > 50 && mFabContainer.isShown())
                 {
                     TransitionUtil.slideTransition(mFabContainer);
                     mFabContainer.setVisibility(View.GONE);
+                }
+                else if (dy < 0 && !mFabContainer.isShown() && !NavigationDrawerUtil.isStudent)
+                {
+                    TransitionUtil.slideTransition(mFabContainer);
+                    mFabContainer.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState)
             {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE)
-                {
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            TransitionUtil.slideTransition(mFabContainer);
-                            mFabContainer.setVisibility(View.VISIBLE);
-                        }
-                    }, 1000);
-                }
                 super.onScrollStateChanged(recyclerView, newState);
             }
         });

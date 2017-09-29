@@ -26,11 +26,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.thnki.classroom.LoginActivity;
-import com.thnki.classroom.ProfileActivity;
 import com.thnki.classroom.R;
 import com.thnki.classroom.fragments.ClassesListFragment;
 import com.thnki.classroom.fragments.LeavesFragment;
 import com.thnki.classroom.fragments.NotesFragment;
+import com.thnki.classroom.fragments.ProfileFragment;
 import com.thnki.classroom.fragments.StaffListFragment;
 import com.thnki.classroom.fragments.StudentsListFragment;
 import com.thnki.classroom.fragments.SubjectsListFragment;
@@ -52,6 +52,10 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
     public static final String SUBJECTS_FRAGMENT = "subjectsFragment";
     public static final String ATTENDANCE_FRAGMENT = "attendanceFragment";
     public static final String TIME_TABLE_FRAGMENT = "timeTableFragment";
+    public static final String PROFILE_FRAGMENT = "profileFragment";
+    public static boolean isStudent;
+    public static boolean isAdmin;
+    private final View headerView;
     private int mCurrentMenu;
 
     private AppCompatActivity mActivity;
@@ -64,9 +68,10 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
     public EventsListener mListener;
     private Menu mMenu;
     private TextView mUserFullName;
-    private TextView mUserId;
+    private TextView mUserDesignation;
     private ImageView mProfileImgView;
     public static User mCurrentUser;
+    private boolean isMenuLoaded;
 
     public NavigationDrawerUtil(AppCompatActivity activity)
     {
@@ -76,23 +81,31 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
         mDrawer = (DrawerLayout) mActivity.findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView) mActivity.findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
+        headerView = mNavigationView.getHeaderView(0);
+        headerView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                loadFragment(PROFILE_FRAGMENT, true);
+                mDrawer.closeDrawers();
+            }
+        });
+
+        mProfileImgView = (ImageView) headerView.findViewById(R.id.profileImageView);
+        mUserFullName = (TextView) headerView.findViewById(R.id.userFullName);
+        mUserDesignation = (TextView) headerView.findViewById(R.id.userId);
+
         String userId = mSharedPrefs.getString(LoginActivity.LOGIN_USER_ID, "");
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         if (userId.charAt(0) == 'a' || userId.charAt(0) == 's')
         {
-            ref.child(User.STAFF).child(userId).addListenerForSingleValueEvent(this);
+            ref.child(User.STAFF).child(userId).addValueEventListener(this);
         }
         else
         {
-            ref.child(User.STUDENTS).child(userId).addListenerForSingleValueEvent(this);
+            ref.child(User.STUDENTS).child(userId.substring(0, 3)).child(userId).addValueEventListener(this);
         }
-        setUpUser();
-
-    }
-
-    private void setUpUser()
-    {
-
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -110,21 +123,22 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
             case R.id.admin_staff:
                 loadFragment(STAFF_LIST_FRAGMENT, true);
                 break;
-            case R.id.admin_leaves:
+            case R.id.launch_leaves_fragment:
                 loadFragment(LEAVES_LIST_FRAGMENT, true);
                 break;
-            case R.id.admin_notes:
+            case R.id.launch_notes_fragment:
                 loadFragment(NOTES_FRAGMENT, true);
                 break;
-            case R.id.admin_subjects:
+            case R.id.launch_subjects_fragment:
                 loadFragment(SUBJECTS_FRAGMENT, true);
                 break;
-            case R.id.admin_time_table:
+            case R.id.launch_time_table_fragment:
                 loadFragment(TIME_TABLE_FRAGMENT, true);
                 break;
             case R.id.nav_notifications:
                 break;
             case R.id.nav_settings:
+                loadFragment(PROFILE_FRAGMENT, true);
                 break;
             case R.id.nav_logout:
                 logout();
@@ -153,6 +167,8 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
                     return new SubjectsListFragment();
                 case TIME_TABLE_FRAGMENT:
                     return new TimeTableFragment();
+                case PROFILE_FRAGMENT:
+                    return ProfileFragment.getInstance(mCurrentUser);
             }
         }
 
@@ -270,60 +286,60 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
         mCurrentFragment = tag;
     }
 
-    private void updateProfileInfo()
-    {
-        View headerView = mNavigationView.getHeaderView(0);
-        mProfileImgView = (ImageView) headerView.findViewById(R.id.profileImageView);
-        mUserFullName = (TextView) headerView.findViewById(R.id.userFullName);
-        mUserId = (TextView) headerView.findViewById(R.id.userId);
-
-        mUserId.setText(mCurrentUser.getUserId());
-        mUserFullName.setText(mCurrentUser.getFullName());
-
-        ImageUtil.loadCircularImg(mActivity, mCurrentUser.getPhotoUrl(), mProfileImgView);
-
-        headerView.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                mActivity.startActivity(new Intent(mActivity, ProfileActivity.class));
-            }
-        });
-    }
-
     @Override
     public void onDataChange(DataSnapshot dataSnapshot)
     {
+        Log.d("ProfileUpdateIssue", "dataSnapshot : " + dataSnapshot);
         if (dataSnapshot.hasChild(Staff.IS_ADMIN))
         {
             mCurrentUser = dataSnapshot.getValue(Staff.class);
+            mUserDesignation.setText(((Staff) mCurrentUser).getDesignation());
         }
         else
         {
             mCurrentUser = dataSnapshot.getValue(Students.class);
+            mUserDesignation.setText(((Students) mCurrentUser).getClassName());
         }
 
-        switch (mCurrentUser.getUserType())
+        mUserFullName.setText(mCurrentUser.getFullName());
+        ImageUtil.loadCircularImg(mActivity, mCurrentUser.getPhotoUrl(), mProfileImgView);
+
+        if (!isMenuLoaded)
         {
-            case User.ADMIN:
-                mCurrentMenu = R.menu.admin_drawer;
-                loadFragment(CLASSES_LIST_FRAGMENT, false);
-                break;
-            case User.STAFF:
-                mCurrentMenu = R.menu.staff_drawer;
-                break;
-            default:
-                mCurrentMenu = R.menu.student_drawer;
-                break;
+            switch (mCurrentUser.userType())
+            {
+                case User.ADMIN:
+                    mCurrentMenu = R.menu.admin_drawer;
+                    loadFragment(CLASSES_LIST_FRAGMENT, false);
+                    isStudent = false;
+                    isAdmin = true;
+                    break;
+                case User.STAFF:
+                    mCurrentMenu = R.menu.staff_drawer;
+                    loadFragment(NOTES_FRAGMENT, false);
+                    isStudent = false;
+                    isAdmin = false;
+                    break;
+                default:
+                    mCurrentMenu = R.menu.student_drawer;
+                    isStudent = true;
+                    isAdmin = false;
+                    loadFragment(NOTES_FRAGMENT, false);
+                    break;
+            }
+            isMenuLoaded = true;
+            loadCurrentMenu();
         }
-        loadCurrentMenu();
-        updateProfileInfo();
     }
 
     @Override
     public void onCancelled(DatabaseError databaseError)
     {
 
+    }
+
+    public static String getClassId()
+    {
+        return mCurrentUser.getUserId().substring(0, 3);
     }
 }

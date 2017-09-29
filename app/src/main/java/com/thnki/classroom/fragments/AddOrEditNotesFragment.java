@@ -235,7 +235,7 @@ public class AddOrEditNotesFragment extends Fragment implements EventsListener, 
     @Override
     public int getMenuItemId()
     {
-        return R.id.admin_notes;
+        return R.id.launch_notes_fragment;
     }
 
     @Override

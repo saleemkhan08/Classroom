@@ -50,7 +50,7 @@ public class Staff extends User
     }
 
     @Override
-    public String getUserType()
+    public String userType()
     {
         if (isAdmin)
         {

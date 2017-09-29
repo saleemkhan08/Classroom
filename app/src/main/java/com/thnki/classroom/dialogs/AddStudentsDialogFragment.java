@@ -120,6 +120,7 @@ public class AddStudentsDialogFragment extends CustomDialogFragment
 
             Students student = new Students();
             student.setUserId(studentCode);
+            student.setClassName(mCurrentClass.getName());
             mStudentDbRef.child(studentCode).setValue(student);
         }
 

@@ -1,5 +1,7 @@
 package com.thnki.classroom.model;
 
+import android.util.Log;
+
 import com.thnki.classroom.utils.Otto;
 
 public class Progress
@@ -24,6 +26,7 @@ public class Progress
 
     public static void show(int msg)
     {
+        Log.d("UploadIssue", "Progress show");
         Progress progress = new Progress(msg);
         progress.toBeShown = true;
         Otto.post(progress);

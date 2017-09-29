@@ -245,4 +245,16 @@
     <string name="uploading">Uploading...</string>
     <string name="title_activity_notes">NotesActivity</string>
     <string name="editNotes">Edit Notes</string>
+    <string name="profile">Profile</string>
+    <string name="profile_settings">Profile Settings</string>
+    <string name="dateOfBirth">Date of Birth</string>
+    <string name="email">Email</string>
+    <string name="phoneNo">Phone No.</string>
+    <string name="editName">Edit Name</string>
+    <string name="please_enter_a_valid_name">Please enter a valid name</string>
+    <string name="address">Address</string>
+    <string name="please_enter_a_valid_date_of_birth">Please enter a valid date of birth</string>
+    <string name="please_enter_a_valid_email">Please enter a valid email</string>
+    <string name="please_enter_a_valid_phone_no">Please enter a valid phone number</string>
+    <string name="please_enter_a_valid_address">Please enter a valid address</string>
 </resources>

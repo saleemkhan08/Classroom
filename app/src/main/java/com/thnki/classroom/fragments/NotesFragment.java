@@ -1,7 +1,6 @@
 package com.thnki.classroom.fragments;
 
 import android.app.Activity;
-import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -57,7 +56,6 @@ public class NotesFragment extends ClassTabFragment implements EventsListener
     private DatabaseReference mRootRef;
     private Classes mCurrentClass;
     private DatabaseReference mNotesDbRef;
-    private Handler mHandler;
     private String mCurrentSubjectCode;
     private DatabaseReference mSubjectDbRef;
     private NotesClassifier mCurrentNotesClassifier;
@@ -74,8 +72,9 @@ public class NotesFragment extends ClassTabFragment implements EventsListener
     {
         Log.d(TAG, "onCreateView2");
         ButterKnife.bind(this, parentView);
-        mHandler = new Handler();
         mCurrentNotesClassifier = new NotesClassifier();
+        ((MainActivity) getActivity()).setToolBarTitle(getString(R.string.notes));
+        mRootRef = FirebaseDatabase.getInstance().getReference();
     }
 
     private void setUpSubjectsTabsListener()
@@ -114,10 +113,8 @@ public class NotesFragment extends ClassTabFragment implements EventsListener
     public void onStart()
     {
         super.onStart();
-        Log.d(TAG, "onStart");
-        ((MainActivity) getActivity()).setToolBarTitle(getString(R.string.notes));
-        mRootRef = FirebaseDatabase.getInstance().getReference();
         Otto.register(this);
+        Log.d(TAG, "onStart");
     }
 
     @Override
@@ -161,29 +158,21 @@ public class NotesFragment extends ClassTabFragment implements EventsListener
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy)
             {
-                if (dy > 0 || dy < 0 && mFabContainer.isShown())
+                if (dy > 50 && mFabContainer.isShown())
                 {
                     TransitionUtil.slideTransition(mFabContainer);
                     mFabContainer.setVisibility(View.GONE);
+                }
+                else if (dy < 0 && !mFabContainer.isShown())
+                {
+                    TransitionUtil.slideTransition(mFabContainer);
+                    mFabContainer.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState)
             {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE)
-                {
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            TransitionUtil.slideTransition(mFabContainer);
-                            mFabContainer.setVisibility(View.VISIBLE);
-                        }
-                    }, 1000);
-                }
                 super.onScrollStateChanged(recyclerView, newState);
             }
         });
@@ -192,7 +181,6 @@ public class NotesFragment extends ClassTabFragment implements EventsListener
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                Log.d(TAG, "Data : " + dataSnapshot);
                 mProgress.setVisibility(View.GONE);
                 if (dataSnapshot.getChildrenCount() <= 0)
                 {
@@ -239,7 +227,7 @@ public class NotesFragment extends ClassTabFragment implements EventsListener
     @Override
     public int getMenuItemId()
     {
-        return R.id.admin_notes;
+        return R.id.launch_notes_fragment;
     }
 
     @Override
@@ -251,13 +239,13 @@ public class NotesFragment extends ClassTabFragment implements EventsListener
     @Override
     public void onTabSelected(TabLayout.Tab tab)
     {
-        Log.d(TAG, "onTabSelected");
         mCurrentClass = (Classes) tab.getTag();
         mCurrentNotesClassifier.setClassId(mCurrentClass.getCode());
         mCurrentNotesClassifier.setClassName(mCurrentClass.getName());
         updateSubjectsAvailability();
         setUpSubjectsTabsListener();
     }
+
 
     private void updateSubjectsAvailability()
     {

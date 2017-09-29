@@ -71,15 +71,16 @@ public class SubjectsListFragment extends ClassTabFragment implements EventsList
         Log.d(TAG, "onCreateView2");
         ButterKnife.bind(this, parentView);
         mHandler = new Handler();
+        ((MainActivity) getActivity()).setToolBarTitle(getString(R.string.subjects));
+        mRootRef = FirebaseDatabase.getInstance().getReference();
     }
+
 
     @Override
     public void onStart()
     {
         super.onStart();
         Log.d(TAG, "onStart");
-        ((MainActivity) getActivity()).setToolBarTitle(getString(R.string.subjects));
-        mRootRef = FirebaseDatabase.getInstance().getReference();
         Otto.register(this);
     }
 
@@ -124,29 +125,21 @@ public class SubjectsListFragment extends ClassTabFragment implements EventsList
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy)
             {
-                if (dy > 0 || dy < 0 && mFabContainer.isShown())
+                if (dy > 50 && mFabContainer.isShown())
                 {
                     TransitionUtil.slideTransition(mFabContainer);
                     mFabContainer.setVisibility(View.GONE);
+                }
+                else if (dy < 0 && !mFabContainer.isShown() && NavigationDrawerUtil.isAdmin)
+                {
+                    TransitionUtil.slideTransition(mFabContainer);
+                    mFabContainer.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState)
             {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE)
-                {
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            TransitionUtil.slideTransition(mFabContainer);
-                            mFabContainer.setVisibility(View.VISIBLE);
-                        }
-                    }, 1000);
-                }
                 super.onScrollStateChanged(recyclerView, newState);
             }
         });
@@ -198,7 +191,7 @@ public class SubjectsListFragment extends ClassTabFragment implements EventsList
     @Override
     public int getMenuItemId()
     {
-        return R.id.admin_subjects;
+        return R.id.launch_subjects_fragment;
     }
 
     @Override
@@ -240,5 +233,19 @@ public class SubjectsListFragment extends ClassTabFragment implements EventsList
         Log.d(TAG, "onTabSelected");
         mCurrentClass = (Classes) tab.getTag();
         setUpRecyclerView();
+    }
+
+    @Override
+    public void handleStudent()
+    {
+        super.handleStudent();
+        mFabContainer.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void handleStaff()
+    {
+        super.handleStaff();
+        mFabContainer.setVisibility(View.GONE);
     }
 }

@@ -84,6 +84,8 @@ public class TimeTableFragment extends ClassTabFragment implements EventsListene
         mCurrentWeekDayCode = weekDaysKey[0];
         mCurrentTimeTable = new TimeTable();
         addWeekDays();
+        ((MainActivity) getActivity()).setToolBarTitle(getString(R.string.timeTable));
+        mRootRef = FirebaseDatabase.getInstance().getReference();
     }
 
     private void addWeekDays()
@@ -127,8 +129,6 @@ public class TimeTableFragment extends ClassTabFragment implements EventsListene
     {
         super.onStart();
         Log.d(TAG, "onStart");
-        ((MainActivity) getActivity()).setToolBarTitle(getString(R.string.timeTable));
-        mRootRef = FirebaseDatabase.getInstance().getReference();
         Otto.register(this);
     }
 
@@ -173,29 +173,21 @@ public class TimeTableFragment extends ClassTabFragment implements EventsListene
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy)
             {
-                if (dy > 0 || dy < 0 && mFabContainer.isShown())
+                if (dy > 50 && mFabContainer.isShown())
                 {
                     TransitionUtil.slideTransition(mFabContainer);
                     mFabContainer.setVisibility(View.GONE);
+                }
+                else if (dy < 0 && !mFabContainer.isShown() && NavigationDrawerUtil.isAdmin)
+                {
+                    TransitionUtil.slideTransition(mFabContainer);
+                    mFabContainer.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState)
             {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE)
-                {
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            TransitionUtil.slideTransition(mFabContainer);
-                            mFabContainer.setVisibility(View.VISIBLE);
-                        }
-                    }, 1000);
-                }
                 super.onScrollStateChanged(recyclerView, newState);
             }
         });
@@ -260,7 +252,7 @@ public class TimeTableFragment extends ClassTabFragment implements EventsListene
     @Override
     public int getMenuItemId()
     {
-        return R.id.admin_time_table;
+        return R.id.launch_time_table_fragment;
     }
 
     @Override
@@ -324,5 +316,19 @@ public class TimeTableFragment extends ClassTabFragment implements EventsListene
 
             }
         });
+    }
+
+    @Override
+    public void handleStudent()
+    {
+        super.handleStudent();
+        mFabContainer.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void handleStaff()
+    {
+        super.handleStaff();
+        mFabContainer.setVisibility(View.GONE);
     }
 }

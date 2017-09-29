@@ -15,6 +15,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.thnki.classroom.R;
 import com.thnki.classroom.model.Classes;
+import com.thnki.classroom.model.User;
+import com.thnki.classroom.utils.NavigationDrawerUtil;
 
 public abstract class ClassTabFragment extends Fragment implements ValueEventListener, TabLayout.OnTabSelectedListener
 {
@@ -22,6 +24,8 @@ public abstract class ClassTabFragment extends Fragment implements ValueEventLis
     TabLayout mTabLayout;
 
     private DatabaseReference mClassesRef;
+    private String mClassId;
+    public static Classes sCurrentClass;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -35,6 +39,7 @@ public abstract class ClassTabFragment extends Fragment implements ValueEventLis
         mContent.addView(inflater.inflate(getContentViewLayoutRes(), null));
         onCreateView(mContent);
         mClassesRef = FirebaseDatabase.getInstance().getReference().child(Classes.CLASSES);
+        handleUser();
         return parentView;
     }
 
@@ -52,15 +57,35 @@ public abstract class ClassTabFragment extends Fragment implements ValueEventLis
     @Override
     public void onDataChange(DataSnapshot dataSnapshot)
     {
-        for (DataSnapshot snapshot : dataSnapshot.getChildren())
+        if (mClassId == null)
         {
-            Classes classes = snapshot.getValue(Classes.class);
-            TabLayout.Tab tab = mTabLayout.newTab();
-            tab.setText(classes.getName());
-            tab.setTag(classes);
-            mTabLayout.addTab(tab);
+            sCurrentClass = null;
+            for (DataSnapshot snapshot : dataSnapshot.getChildren())
+            {
+                Classes classes = snapshot.getValue(Classes.class);
+                TabLayout.Tab tab = mTabLayout.newTab();
+                tab.setText(classes.getName());
+                tab.setTag(classes);
+                mTabLayout.addTab(tab);
+            }
         }
+        else
+        {
+            for (DataSnapshot snapshot : dataSnapshot.getChildren())
+            {
+                sCurrentClass = snapshot.getValue(Classes.class);
 
+                if (mClassId.equals(sCurrentClass.getCode()))
+                {
+                    TabLayout.Tab tab = mTabLayout.newTab();
+                    tab.setText(sCurrentClass.getName());
+                    tab.setTag(sCurrentClass);
+                    mTabLayout.addTab(tab);
+                    mTabLayout.setVisibility(View.GONE);
+                    return;
+                }
+            }
+        }
     }
 
     @Override
@@ -79,6 +104,30 @@ public abstract class ClassTabFragment extends Fragment implements ValueEventLis
 
     @Override
     public void onTabReselected(TabLayout.Tab tab)
+    {
+
+    }
+
+    private void handleUser()
+    {
+        switch (NavigationDrawerUtil.mCurrentUser.userType())
+        {
+            case User.STUDENTS:
+                mClassId = NavigationDrawerUtil.getClassId();
+                handleStudent();
+                break;
+            case User.STAFF:
+                handleStaff();
+                break;
+        }
+    }
+
+    public void handleStaff()
+    {
+
+    }
+
+    public void handleStudent()
     {
 
     }
