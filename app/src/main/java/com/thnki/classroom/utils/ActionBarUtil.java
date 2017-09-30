@@ -24,6 +24,7 @@ public class ActionBarUtil
     public static final String SHOW_NOTES_FRAGMENT_MENU = "showNotesFragmentMenu";
     public static final String SHOW_NOTIFICATIONS_MENU = "showNotificationsMenu";
     public static final String SHOW_SELECTED_NOTIFICATIONS_MENU = "showSelectedNotificationsMenu";
+    public static final String SHOW_PROFILE_MENU = "showProfileMenu";
     Activity mActivity;
     MenuInflater mMenuInflater;
     Menu mMenu;
@@ -71,6 +72,9 @@ public class ActionBarUtil
                 break;
             case SHOW_NOTES_FRAGMENT_MENU:
                 loadNewMenu(R.menu.menu_notes);
+                break;
+            case SHOW_PROFILE_MENU:
+                loadNewMenu(R.menu.menu_profile);
                 break;
             case NO_MENU:
             case SHOW_INDEPENDENT_SUBJECT_MENU:

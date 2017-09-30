@@ -279,4 +279,12 @@
     <string name="has_submitted_following_notes_for_review">has submitted following notes for review</string>
     <string name="following_notes_has_been_rejected">Following notes has been rejected</string>
     <string name="following_notes_has_been_approved">Following notes has been approved</string>
+    <string name="changePassword">Change Password</string>
+    <string name="currentPassword">Current Password</string>
+    <string name="newPassword">New Password</string>
+    <string name="confirmPassword">Confirm Password</string>
+    <string name="invalid_password">Invalid Password</string>
+    <string name="password_must_contain_at_least_6_char">New password must contain at least 6 characters</string>
+    <string name="new_password_did_not_match_with_confirm_password">New password did not match with confirm password</string>
+    <string name="wrong_current_password">Worng Current Password</string>
 </resources>

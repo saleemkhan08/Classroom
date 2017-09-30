@@ -6,6 +6,7 @@ public abstract class User
 {
     public static final String FULL_NAME = "fullName";
     public static final String PHOTO_URL = "photoUrl";
+    public static final String PASSWORD = "password";
     private String userId;
     private String fullName;
     private String photoUrl;

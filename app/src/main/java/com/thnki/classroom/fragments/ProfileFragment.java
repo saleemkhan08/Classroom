@@ -23,8 +23,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.otto.Subscribe;
 import com.thnki.classroom.MainActivity;
 import com.thnki.classroom.R;
+import com.thnki.classroom.dialogs.ChangePasswordDialogFragment;
 import com.thnki.classroom.dialogs.EditNameDialogFragment;
 import com.thnki.classroom.dialogs.EditUserDetailsDialogFragment;
 import com.thnki.classroom.listeners.EventsListener;
@@ -110,8 +112,9 @@ public class ProfileFragment extends Fragment implements EventsListener, ValueEv
         {
             ((MainActivity) activity).setToolBarTitle(getString(R.string.profile));
             ((MainActivity) activity).updateEventsListener(this);
-            Otto.post(ActionBarUtil.NO_MENU);
+            Otto.post(ActionBarUtil.SHOW_PROFILE_MENU);
         }
+        Otto.register(this);
         return parentView;
     }
 
@@ -263,5 +266,29 @@ public class ProfileFragment extends Fragment implements EventsListener, ValueEv
     {
         EditUserDetailsDialogFragment.getInstance(mUserDbRef, mCurrentUser)
                 .show(getFragmentManager(), EditUserDetailsDialogFragment.TAG);
+    }
+
+    @Subscribe
+    public void onOptionItemClicked(Integer itemId)
+    {
+        switch (itemId)
+        {
+            case R.id.changePassword:
+                showPasswordChangeDialog();
+                break;
+        }
+    }
+
+    private void showPasswordChangeDialog()
+    {
+        ChangePasswordDialogFragment.getInstance(mUserDbRef, mCurrentUser.getPassword())
+                .show(getFragmentManager(), ChangePasswordDialogFragment.TAG);
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        Otto.unregister(this);
     }
 }
