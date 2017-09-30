@@ -10,6 +10,7 @@ public class NotesClassifier
     private String className;
     private boolean edit;
     private String teacherId;
+    private boolean isReviewedNotesShown = true;
 
     public String getClassId()
     {
@@ -79,5 +80,15 @@ public class NotesClassifier
     public void setClassName(String className)
     {
         this.className = className;
+    }
+
+    public boolean isReviewedNotesShown()
+    {
+        return isReviewedNotesShown;
+    }
+
+    public void setReviewedNotesShown(boolean reviewedNotesShown)
+    {
+        isReviewedNotesShown = reviewedNotesShown;
     }
 }

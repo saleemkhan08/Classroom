@@ -229,7 +229,7 @@ public class Leaves
     public static String getDbKeyDateTime(Calendar calendar)
     {
         return "" + calendar.get(Calendar.YEAR) + get2DigitNum(calendar.get(Calendar.MONTH) + 1)
-                + get2DigitNum(calendar.get(Calendar.DAY_OF_MONTH)) + get2DigitNum(calendar.get(Calendar.MINUTE))
-                + get2DigitNum(calendar.get(Calendar.SECOND));
+                + get2DigitNum(calendar.get(Calendar.DAY_OF_MONTH)) + get2DigitNum(calendar.get(Calendar.HOUR_OF_DAY))
+                + get2DigitNum(calendar.get(Calendar.MINUTE)) + get2DigitNum(calendar.get(Calendar.SECOND));
     }
 }

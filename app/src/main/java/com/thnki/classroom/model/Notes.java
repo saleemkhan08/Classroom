@@ -1,11 +1,20 @@
 package com.thnki.classroom.model;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
+
+import static com.thnki.classroom.dialogs.MonthYearPickerDialog.MONTH_ARRAY;
 
 public class Notes
 {
     public static final String NOTES = "notes";
     public static final String DATE = "date";
+    public static final String REVIEW = "review";
+    public static final String REJECTED = "rejected";
+    public static final String APPROVED = "approved";
     private String notesTitle;
     private String notesDescription;
     private ArrayList<NotesImage> notesImages;
@@ -13,11 +22,22 @@ public class Notes
     private String submitterId;
     private String submitterName;
     private String submitterPhotoUrl;
-    private String date;
+    private long date;
+    private String notesStatus;
 
     public Notes()
     {
 
+    }
+
+    public String getNotesStatus()
+    {
+        return notesStatus;
+    }
+
+    public void setNotesStatus(String status)
+    {
+        this.notesStatus = status;
     }
 
     public String getNotesTitle()
@@ -70,12 +90,17 @@ public class Notes
         this.submitterId = submitterId;
     }
 
-    public String getDate()
+    public long getDate()
     {
         return date;
     }
 
-    public void setDate(String date)
+    public String dateKey()
+    {
+        return "" + (-date);
+    }
+
+    public void setDate(long date)
     {
         this.date = date;
     }
@@ -98,5 +123,27 @@ public class Notes
     public void setSubmitterPhotoUrl(String submitterPhotoUrl)
     {
         this.submitterPhotoUrl = submitterPhotoUrl;
+    }
+
+    public static final String[] AM_PM = {"AM", "PM"};
+
+    public String displayDate()
+    {
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss", Locale.ENGLISH);
+        try
+        {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(format.parse(dateKey()));
+            return MONTH_ARRAY[calendar.get(Calendar.MONTH)] + "-" +
+                    calendar.get(Calendar.DAY_OF_MONTH) + " "
+                    + calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE)
+                    + " " + AM_PM[calendar.get(Calendar.AM_PM)];
+
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

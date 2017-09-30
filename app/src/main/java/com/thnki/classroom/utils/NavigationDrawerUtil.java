@@ -30,6 +30,7 @@ import com.thnki.classroom.R;
 import com.thnki.classroom.fragments.ClassesListFragment;
 import com.thnki.classroom.fragments.LeavesFragment;
 import com.thnki.classroom.fragments.NotesFragment;
+import com.thnki.classroom.fragments.NotificationListFragment;
 import com.thnki.classroom.fragments.ProfileFragment;
 import com.thnki.classroom.fragments.StaffListFragment;
 import com.thnki.classroom.fragments.StudentsListFragment;
@@ -53,6 +54,7 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
     public static final String ATTENDANCE_FRAGMENT = "attendanceFragment";
     public static final String TIME_TABLE_FRAGMENT = "timeTableFragment";
     public static final String PROFILE_FRAGMENT = "profileFragment";
+    public static final String NOTIFICATIONS_FRAGMENT = "notificationsFragment";
     public static boolean isStudent;
     public static boolean isAdmin;
     private final View headerView;
@@ -136,6 +138,7 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
                 loadFragment(TIME_TABLE_FRAGMENT, true);
                 break;
             case R.id.nav_notifications:
+                loadFragment(NOTIFICATIONS_FRAGMENT, true);
                 break;
             case R.id.nav_settings:
                 loadFragment(PROFILE_FRAGMENT, true);
@@ -169,6 +172,8 @@ public class NavigationDrawerUtil implements NavigationView.OnNavigationItemSele
                     return new TimeTableFragment();
                 case PROFILE_FRAGMENT:
                     return ProfileFragment.getInstance(mCurrentUser);
+                case NOTIFICATIONS_FRAGMENT:
+                    return new NotificationListFragment();
             }
         }
 

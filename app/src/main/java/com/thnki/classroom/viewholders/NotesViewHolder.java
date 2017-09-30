@@ -73,7 +73,22 @@ public class NotesViewHolder extends RecyclerView.ViewHolder
     @Bind(R.id.notesDescription)
     public TextView notesDescription;
 
+    @Bind(R.id.dateTime)
+    public TextView dateTime;
+
+    @Bind(R.id.reviewButtonsContainer)
+    public View reviewButtonsContainer;
+
+    @Bind(R.id.approveBtn)
+    public View approveBtn;
+
+    @Bind(R.id.rejectButton)
+    public View rejectButton;
+
     public View mItemView;
+
+    @Bind(R.id.rejectionText)
+    public View rejectionText;
 
     public NotesViewHolder(View itemView)
     {

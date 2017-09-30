@@ -257,4 +257,26 @@
     <string name="please_enter_a_valid_email">Please enter a valid email</string>
     <string name="please_enter_a_valid_phone_no">Please enter a valid phone number</string>
     <string name="please_enter_a_valid_address">Please enter a valid address</string>
+    <string name="notes_will_be_displayed_after_review">Notes will be displayed after review..</string>
+    <string name="unreviewed">Un-Reviewed</string>
+    <string name="pending">Pending Notes</string>
+    <string name="reviewedNotes">Reviewed Notes</string>
+    <string name="approve">Approve</string>
+    <string name="reject">Reject</string>
+    <string name="noNewNotificationsFound">Notifications not found.</string>
+    <string name="message">Message</string>
+    <string name="notificationMessage">Message</string>
+    <string name="send">Send</string>
+    <string name="please_enter_a_valid_message">Please enter a valid messgae</string>
+    <string name="your_notes_with_title">Your notes with title</string>
+    <string name="has_been_rejected">has been rejected</string>
+    <string name="uploaded_at">uploaded at</string>
+    <string name="reviewerComment">Review Comment</string>
+    <string name="please_enter_a_valid_reviewer_comment">Please enter a valid review comment</string>
+    <string name="Rejected">Rejected</string>
+    <string name="has_been_approved">has been approved</string>
+    <string name="has_submitted_notes_with_title">has submitted notes with title</string>
+    <string name="has_submitted_following_notes_for_review">has submitted following notes for review</string>
+    <string name="following_notes_has_been_rejected">Following notes has been rejected</string>
+    <string name="following_notes_has_been_approved">Following notes has been approved</string>
 </resources>

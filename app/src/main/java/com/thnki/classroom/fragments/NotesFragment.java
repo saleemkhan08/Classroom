@@ -14,6 +14,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.otto.Subscribe;
 import com.thnki.classroom.MainActivity;
 import com.thnki.classroom.R;
 import com.thnki.classroom.adapters.NotesAdapter;
@@ -133,7 +134,6 @@ public class NotesFragment extends ClassTabFragment implements EventsListener
         if (activity instanceof MainActivity)
         {
             ((MainActivity) activity).updateEventsListener(this);
-            Otto.post(ActionBarUtil.SHOW_INDEPENDENT_NOTES_MENU);
         }
     }
 
@@ -149,7 +149,25 @@ public class NotesFragment extends ClassTabFragment implements EventsListener
     private void setUpRecyclerView()
     {
         Log.d(TAG, "setUpRecyclerView");
-        mNotesDbRef = mRootRef.child(Notes.NOTES).child(mCurrentClass.getCode()).child(mCurrentSubjectCode);
+
+
+        if (mCurrentNotesClassifier.isReviewedNotesShown())
+        {
+            if (!NavigationDrawerUtil.isStudent)
+            {
+                Otto.post(ActionBarUtil.SHOW_PENDING_NOTES_FRAGMENT_MENU);
+            }
+            mNotesDbRef = mRootRef.child(Notes.NOTES).child(mCurrentClass.getCode()).child(mCurrentSubjectCode);
+        }
+        else
+        {
+            if (!NavigationDrawerUtil.isStudent)
+            {
+                Otto.post(ActionBarUtil.SHOW_NOTES_FRAGMENT_MENU);
+            }
+            mNotesDbRef = mRootRef.child(Notes.NOTES).child(Notes.REVIEW).child(mCurrentClass.getCode()).child(mCurrentSubjectCode);
+        }
+
         mAdapter = NotesAdapter.getInstance(mCurrentNotesClassifier, mNotesDbRef, (AppCompatActivity) getActivity());
         mNotesRecyclerView.setAdapter(mAdapter);
         mNotesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -280,5 +298,22 @@ public class NotesFragment extends ClassTabFragment implements EventsListener
                                                      }
 
                                                     );
+    }
+
+    @Subscribe
+    public void onOptionItemClicked(Integer itemId)
+    {
+        switch (itemId)
+        {
+            case R.id.reviewed:
+                mCurrentNotesClassifier.setReviewedNotesShown(true);
+                setUpRecyclerView();
+                break;
+            case R.id.pending:
+                mCurrentNotesClassifier.setReviewedNotesShown(false);
+                setUpRecyclerView();
+                break;
+
+        }
     }
 }

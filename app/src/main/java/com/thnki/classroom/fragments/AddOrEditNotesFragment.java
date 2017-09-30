@@ -44,7 +44,9 @@ import com.thnki.classroom.MainActivity;
 import com.thnki.classroom.R;
 import com.thnki.classroom.adapters.EditGalleryAdapter;
 import com.thnki.classroom.adapters.StaffFirebaseListAdapter;
+import com.thnki.classroom.dialogs.NotificationDialogFragment;
 import com.thnki.classroom.listeners.EventsListener;
+import com.thnki.classroom.listeners.OnDismissListener;
 import com.thnki.classroom.model.Leaves;
 import com.thnki.classroom.model.Notes;
 import com.thnki.classroom.model.NotesClassifier;
@@ -128,7 +130,7 @@ public class AddOrEditNotesFragment extends Fragment implements EventsListener, 
                 .child(Notes.NOTES).child(mCurrentNotesClassifier.getClassId())
                 .child(mCurrentNotesClassifier.getSubjectId());
 
-        mNotesDbRef = mRootRef.child(Notes.NOTES).child(mCurrentNotesClassifier.getClassId())
+        mNotesDbRef = mRootRef.child(Notes.NOTES).child(Notes.REVIEW).child(mCurrentNotesClassifier.getClassId())
                 .child(mCurrentNotesClassifier.getSubjectId());
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -370,9 +372,9 @@ public class AddOrEditNotesFragment extends Fragment implements EventsListener, 
         Staff staff = (Staff) mNotesApprover.getTag();
         notes.setReviewerId(staff.getUserId());
 
-        if (notes.getDate() == null)
+        if (notes.getDate() >= 0)
         {
-            notes.setDate(getCurrentDateKey());
+            notes.setDate(-Long.parseLong(getCurrentDateKey()));
         }
 
         notes.setNotesDescription(mNotesDescription.getText().toString().trim());
@@ -393,7 +395,7 @@ public class AddOrEditNotesFragment extends Fragment implements EventsListener, 
         else
         {
             Progress.show(R.string.uploading);
-            StorageReference ref = mNotesStorageRef.child(notes.getDate());
+            StorageReference ref = mNotesStorageRef.child(notes.dateKey());
             final int noOfUploadingPhoto = mImageList.size();
             Log.d("fixImageOrderIssue", "mImageList : " + mImageList);
             if (noOfUploadingPhoto > 0)
@@ -482,17 +484,28 @@ public class AddOrEditNotesFragment extends Fragment implements EventsListener, 
 
     }
 
-    private void saveNotes(Notes notes)
+    private void saveNotes(final Notes notes)
     {
         Log.d("fixImageOrderIssue", "notes.getNotesImages() : " + notes.getNotesImages());
-        mNotesDbRef.child(notes.getDate()).setValue(notes).addOnCompleteListener(new OnCompleteListener<Void>()
+        mNotesDbRef.child(notes.dateKey()).setValue(notes).addOnCompleteListener(new OnCompleteListener<Void>()
         {
             @Override
             public void onComplete(@NonNull Task<Void> task)
             {
-                Progress.hide();
-                ToastMsg.show(R.string.uploaded);
-                getActivity().onBackPressed();
+                notes.setNotesStatus(Notes.REVIEW);
+                NotificationDialogFragment.getInstance(notes, new OnDismissListener()
+                {
+                    @Override
+                    public void onDismiss()
+                    {
+                        Progress.hide();
+                        ToastMsg.show(R.string.notes_will_be_displayed_after_review);
+                        getActivity().onBackPressed();
+                    }
+                }).show(getActivity().getSupportFragmentManager(),
+                        NotificationDialogFragment.TAG);
+
+
             }
         }).addOnFailureListener(new OnFailureListener()
         {

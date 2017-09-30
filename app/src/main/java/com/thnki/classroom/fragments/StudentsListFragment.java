@@ -81,6 +81,14 @@ public class StudentsListFragment extends ClassTabFragment implements EventsList
     {
         Log.d(TAG, "onCreateView2");
         ButterKnife.bind(this, parentView);
+        mRootRef = FirebaseDatabase.getInstance().getReference();
+        Activity activity = getActivity();
+        if (activity instanceof MainActivity)
+        {
+            ((MainActivity) activity).updateEventsListener(this);
+            ((MainActivity) getActivity()).setToolBarTitle(getString(R.string.students));
+            Otto.post(ActionBarUtil.SHOW_INDEPENDENT_STUDENTS_MENU);
+        }
     }
 
     @Override
@@ -88,8 +96,6 @@ public class StudentsListFragment extends ClassTabFragment implements EventsList
     {
         super.onStart();
         Log.d(TAG, "onStart");
-        mRootRef = FirebaseDatabase.getInstance().getReference();
-        ((MainActivity) getActivity()).setToolBarTitle(getString(R.string.students));
         Otto.register(this);
     }
 
@@ -105,12 +111,6 @@ public class StudentsListFragment extends ClassTabFragment implements EventsList
     {
         super.onResume();
         Log.d(TAG, "onResume");
-        Activity activity = getActivity();
-        if (activity instanceof MainActivity)
-        {
-            ((MainActivity) activity).updateEventsListener(this);
-            Otto.post(ActionBarUtil.SHOW_INDEPENDENT_STUDENTS_MENU);
-        }
         mDatePickerDialog = new DatePickerDialog(getActivity(), this,
                 Calendar.getInstance().get(Calendar.YEAR),
                 Calendar.getInstance().get(Calendar.MONTH),

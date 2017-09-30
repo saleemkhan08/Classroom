@@ -13,6 +13,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -20,14 +21,17 @@ import com.squareup.otto.Subscribe;
 import com.stfalcon.frescoimageviewer.ImageViewer;
 import com.thnki.classroom.MainActivity;
 import com.thnki.classroom.R;
+import com.thnki.classroom.dialogs.NotificationDialogFragment;
 import com.thnki.classroom.fragments.AddOrEditNotesFragment;
 import com.thnki.classroom.listeners.ImageClickListener;
+import com.thnki.classroom.listeners.OnDismissListener;
 import com.thnki.classroom.model.Notes;
 import com.thnki.classroom.model.NotesClassifier;
 import com.thnki.classroom.model.NotesImage;
 import com.thnki.classroom.model.Progress;
 import com.thnki.classroom.model.ToastMsg;
 import com.thnki.classroom.utils.ImageUtil;
+import com.thnki.classroom.utils.NavigationDrawerUtil;
 import com.thnki.classroom.utils.Otto;
 import com.thnki.classroom.viewholders.NotesViewHolder;
 
@@ -39,15 +43,15 @@ public class NotesAdapter extends FirebaseRecyclerAdapter<Notes, NotesViewHolder
 {
     private static final String TAG = "NotesAdapter";
     private AppCompatActivity mActivity;
-    public DatabaseReference mNotesDbRef;
+    private Query mNotesDbRef;
     private NotesClassifier mNotesClassifier;
 
     public static NotesAdapter getInstance(NotesClassifier classifier, DatabaseReference reference, AppCompatActivity activity)
     {
-        Log.d(TAG, "NotesAdapter getInstance: reference : " + reference);
+        Query ref = reference.orderByChild(Notes.DATE);
         NotesAdapter fragment = new NotesAdapter(Notes.class,
-                R.layout.notes_row, NotesViewHolder.class, reference, activity);
-        fragment.mNotesDbRef = reference;
+                R.layout.notes_row, NotesViewHolder.class, ref, activity);
+        fragment.mNotesDbRef = ref;
         fragment.mNotesClassifier = classifier;
         return fragment;
     }
@@ -68,6 +72,67 @@ public class NotesAdapter extends FirebaseRecyclerAdapter<Notes, NotesViewHolder
         {
             list.add(image.url);
         }
+        if (mNotesClassifier.isReviewedNotesShown())
+        {
+            viewHolder.reviewButtonsContainer.setVisibility(View.GONE);
+        }
+        else
+        {
+            if (model.getNotesStatus() != null && model.getNotesStatus().equals(Notes.REJECTED))
+            {
+                viewHolder.rejectionText.setVisibility(View.VISIBLE);
+                viewHolder.reviewButtonsContainer.setVisibility(View.GONE);
+            }
+            else
+            {
+                viewHolder.rejectionText.setVisibility(View.GONE);
+                viewHolder.reviewButtonsContainer.setVisibility(View.VISIBLE);
+
+                viewHolder.rejectButton.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        model.setNotesStatus(Notes.REJECTED);
+                        showNotificationDialog(model, new OnDismissListener()
+                        {
+                            @Override
+                            public void onDismiss()
+                            {
+                                updateRejectionStatus(model);
+                            }
+                        });
+
+                    }
+                });
+
+                viewHolder.approveBtn.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        model.setNotesStatus(Notes.APPROVED);
+                        showNotificationDialog(model, new OnDismissListener()
+                        {
+                            @Override
+                            public void onDismiss()
+                            {
+                                FirebaseDatabase.getInstance().getReference().child(Notes.NOTES)
+                                        .child(mNotesClassifier.getClassId()).child(mNotesClassifier.getSubjectId())
+                                        .child(model.dateKey()).setValue(model).addOnCompleteListener(new OnCompleteListener<Void>()
+                                {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task)
+                                    {
+                                        mNotesDbRef.getRef().child(model.dateKey()).removeValue();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        }
         viewHolder.setClickListener(new ImageClickListener()
         {
             @Override
@@ -85,11 +150,14 @@ public class NotesAdapter extends FirebaseRecyclerAdapter<Notes, NotesViewHolder
                         .show();
             }
         });
+        viewHolder.dateTime.setText(model.displayDate());
         viewHolder.notesTitle.setText(model.getNotesTitle());
         viewHolder.notesDescription.setText(model.getNotesDescription());
         viewHolder.createrName.setText(model.getSubmitterName());
         ImageUtil.loadCircularImg(model.getSubmitterPhotoUrl(), viewHolder.createrImage);
+
         configureOptions(viewHolder, model);
+
         ArrayList<NotesImage> images = model.getNotesImages();
         switch (images.size())
         {
@@ -123,6 +191,18 @@ public class NotesAdapter extends FirebaseRecyclerAdapter<Notes, NotesViewHolder
         }
     }
 
+    private void updateRejectionStatus(Notes notes)
+    {
+        mNotesDbRef.getRef().child(notes.dateKey()).setValue(notes);
+    }
+
+    private void showNotificationDialog(Notes model, OnDismissListener listener)
+    {
+        NotificationDialogFragment.getInstance(model, listener)
+                .show(mActivity.getSupportFragmentManager(),
+                        NotificationDialogFragment.TAG);
+    }
+
     @Subscribe
     public void reload(String str)
     {
@@ -136,6 +216,15 @@ public class NotesAdapter extends FirebaseRecyclerAdapter<Notes, NotesViewHolder
 
     private void configureOptions(final NotesViewHolder holder, final Notes notes)
     {
+        if (NavigationDrawerUtil.mCurrentUser.getUserId()
+                .equals(notes.getSubmitterId()) || !NavigationDrawerUtil.isStudent)
+        {
+            holder.optionsIconContainer.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            holder.optionsIconContainer.setVisibility(View.GONE);
+        }
         holder.optionsIconContainer.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -171,12 +260,12 @@ public class NotesAdapter extends FirebaseRecyclerAdapter<Notes, NotesViewHolder
         StorageReference notesStorageRef = FirebaseStorage.getInstance().getReference()
                 .child(Notes.NOTES).child(mNotesClassifier.getClassId())
                 .child(mNotesClassifier.getSubjectId());
-        notesStorageRef.child(notes.getDate()).delete().addOnCompleteListener(new OnCompleteListener<Void>()
+        notesStorageRef.child(notes.dateKey()).delete().addOnCompleteListener(new OnCompleteListener<Void>()
         {
             @Override
             public void onComplete(@NonNull Task<Void> task)
             {
-                mNotesDbRef.child(notes.getDate()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>()
+                mNotesDbRef.getRef().child(notes.dateKey()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>()
                 {
                     @Override
                     public void onComplete(@NonNull Task<Void> task)

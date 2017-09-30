@@ -20,6 +20,10 @@ public class ActionBarUtil
     public static final String SHOW_INDEPENDENT_TIME_TABLE_MENU = "showIndependentTimeTableMenu";
     public static final String SHOW_MULTIPLE_TIME_TABLE_MENU = "showMultipleTimeTableMenu";
     public static final String SHOW_INDEPENDENT_NOTES_MENU = "showIndependentNotesMenu";
+    public static final String SHOW_PENDING_NOTES_FRAGMENT_MENU = "showPendingNotesFragmentMenu";
+    public static final String SHOW_NOTES_FRAGMENT_MENU = "showNotesFragmentMenu";
+    public static final String SHOW_NOTIFICATIONS_MENU = "showNotificationsMenu";
+    public static final String SHOW_SELECTED_NOTIFICATIONS_MENU = "showSelectedNotificationsMenu";
     Activity mActivity;
     MenuInflater mMenuInflater;
     Menu mMenu;
@@ -61,6 +65,12 @@ public class ActionBarUtil
                 break;
             case SHOW_ADMIN_LEAVES_MENU:
                 loadNewMenu(R.menu.admin_leaves_menu);
+                break;
+            case SHOW_PENDING_NOTES_FRAGMENT_MENU:
+                loadNewMenu(R.menu.menu_pending_notes);
+                break;
+            case SHOW_NOTES_FRAGMENT_MENU:
+                loadNewMenu(R.menu.menu_notes);
                 break;
             case NO_MENU:
             case SHOW_INDEPENDENT_SUBJECT_MENU:
