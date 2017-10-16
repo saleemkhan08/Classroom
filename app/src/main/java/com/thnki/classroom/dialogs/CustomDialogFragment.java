@@ -36,6 +36,13 @@ public abstract class CustomDialogFragment extends DialogFragment implements Tab
     private View mDialogFabContainer;
     private FloatingActionButton mDialogFab;
 
+    private View mSubmitBtn2;
+    private ImageView mSubmitBtn1Img;
+    private ImageView mSubmitBtn2Img;
+
+    private TextView mSubmitBtn1Txt;
+    private TextView mSubmitBtn2Txt;
+
     public CustomDialogFragment()
     {
 
@@ -53,9 +60,20 @@ public abstract class CustomDialogFragment extends DialogFragment implements Tab
 
         View parentView = inflater.inflate(R.layout.fragment_custom_dialog, container, false);
         mDialogTitle = (TextView) parentView.findViewById(R.id.dialogTitle);
+
         mSubmitBtnImg = (ImageView) parentView.findViewById(R.id.submitBtnImg);
         mSubmitBtnTxt = (TextView) parentView.findViewById(R.id.submitBtnTxt);
-        mSubmitBtn = parentView.findViewById(R.id.submitBtn);
+
+        mSubmitBtn = parentView.findViewById(R.id.singleSubmitBtnContainer);
+
+        mSubmitBtn1Img = (ImageView) parentView.findViewById(R.id.submitBtn1Img);
+        mSubmitBtn1Txt = (TextView) parentView.findViewById(R.id.submitBtn1Txt);
+
+        mSubmitBtn2Img = (ImageView) parentView.findViewById(R.id.submitBtn2Img);
+        mSubmitBtn2Txt = (TextView) parentView.findViewById(R.id.submitBtn2Txt);
+
+        mSubmitBtn2 = parentView.findViewById(R.id.dualSubmitButtonContainer);
+
         mBottomPadding = parentView.findViewById(R.id.bottomPadding);
         mSubTitle = (TextView) parentView.findViewById(dialogSubTitle);
         mTabLayout = (TabLayout) parentView.findViewById(R.id.classesTab);
@@ -79,11 +97,37 @@ public abstract class CustomDialogFragment extends DialogFragment implements Tab
             }
         });
 
+        parentView.findViewById(R.id.submitBtn1).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                submit1(view);
+            }
+        });
+
+        parentView.findViewById(R.id.submitBtn2).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                submit2(view);
+            }
+        });
+
         mDialogContainer = (LinearLayout) parentView.findViewById(R.id.dialogContainer);
         mDialogContainer.removeAllViews();
         mDialogContainer.addView(inflater.inflate(getContentViewLayoutRes(), null));
         onCreateView(mDialogContainer);
         return parentView;
+    }
+
+    protected void submit1(View view)
+    {
+    }
+
+    protected void submit2(View view)
+    {
     }
 
     public abstract void onCreateView(View parentView);
@@ -95,11 +139,6 @@ public abstract class CustomDialogFragment extends DialogFragment implements Tab
     {
         super.onPause();
         dismiss();
-    }
-
-    public void hideSubmitBtn()
-    {
-        mSubmitBtn.setVisibility(View.GONE);
     }
 
     public void setDialogTitle(String title)
@@ -115,16 +154,67 @@ public abstract class CustomDialogFragment extends DialogFragment implements Tab
     public void setSubmitBtnTxt(String title)
     {
         mSubmitBtnTxt.setText(title);
+        showSubmitButton();
     }
 
     public void setSubmitBtnTxt(int title)
     {
         mSubmitBtnTxt.setText(title);
+        showSubmitButton();
     }
 
     public void setSubmitBtnImg(int imgResId)
     {
         mSubmitBtnImg.setImageResource(imgResId);
+        showSubmitButton();
+    }
+
+    public void showSubmitButton()
+    {
+        mSubmitBtn.setVisibility(View.VISIBLE);
+        mSubmitBtn2.setVisibility(View.GONE);
+    }
+
+    public void setSubmitBtn1Txt(String title)
+    {
+        mSubmitBtn1Txt.setText(title);
+        showDualSubmitButton();
+    }
+
+    public void setSubmitBtn1Txt(int title)
+    {
+        mSubmitBtn1Txt.setText(title);
+        showDualSubmitButton();
+    }
+
+    public void setSubmitBtn1Img(int imgResId)
+    {
+        mSubmitBtn1Img.setImageResource(imgResId);
+        showDualSubmitButton();
+    }
+
+    public void showDualSubmitButton()
+    {
+        mSubmitBtn2.setVisibility(View.VISIBLE);
+        mSubmitBtn.setVisibility(View.GONE);
+    }
+
+    public void setSubmitBtn2Txt(String title)
+    {
+        mSubmitBtn2Txt.setText(title);
+        showDualSubmitButton();
+    }
+
+    public void setSubmitBtn2Txt(int title)
+    {
+        mSubmitBtn2Txt.setText(title);
+        showDualSubmitButton();
+    }
+
+    public void setSubmitBtn2Img(int imgResId)
+    {
+        mSubmitBtn2Img.setImageResource(imgResId);
+        showDualSubmitButton();
     }
 
     public void submit(View view)

@@ -16,6 +16,8 @@ public class Notifications
     private String senderPhotoUrl;
     private String senderId;
     private long dateTime;
+    private Leaves leave;
+    private Notes note;
 
     public String getMessage()
     {
@@ -81,7 +83,8 @@ public class Notifications
             calendar.setTime(format.parse(dateTimeKey()));
             return MONTH_ARRAY[calendar.get(Calendar.MONTH)] + "-" +
                     calendar.get(Calendar.DAY_OF_MONTH) + " "
-                    + calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE)
+                    + Leaves.get2DigitNum(calendar.get(Calendar.HOUR))
+                    + ":" + Leaves.get2DigitNum(calendar.get(Calendar.MINUTE))
                     + " " + AM_PM[calendar.get(Calendar.AM_PM)];
         }
         catch (ParseException e)
@@ -89,5 +92,25 @@ public class Notifications
             e.printStackTrace();
         }
         return null;
+    }
+
+    public Leaves getLeave()
+    {
+        return leave;
+    }
+
+    public void setLeave(Leaves leave)
+    {
+        this.leave = leave;
+    }
+
+    public Notes getNote()
+    {
+        return note;
+    }
+
+    public void setNote(Notes note)
+    {
+        this.note = note;
     }
 }

@@ -76,7 +76,7 @@ public class EditUserDetailsDialogFragment extends CustomDialogFragment
     @Override
     public void submit(View view)
     {
-
+        super.submit(view);
         currentUser.setDob(dob.getText().toString());
         currentUser.setEmail(email.getText().toString());
         currentUser.setPhone(phoneNo.getText().toString());

@@ -2,10 +2,8 @@ package com.thnki.classroom.fragments;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,12 +26,12 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import com.squareup.otto.Subscribe;
-import com.thnki.classroom.LoginActivity;
 import com.thnki.classroom.MainActivity;
 import com.thnki.classroom.R;
 import com.thnki.classroom.dialogs.AddLeavesDialogFragment;
 import com.thnki.classroom.dialogs.LeavesDetailDialogFragment;
 import com.thnki.classroom.dialogs.MonthYearPickerDialog;
+import com.thnki.classroom.dialogs.RequestedLeavesDialogFragment;
 import com.thnki.classroom.dialogs.SelectStaffDialogFragment;
 import com.thnki.classroom.dialogs.SelectStudentDialogFragment;
 import com.thnki.classroom.listeners.EventsListener;
@@ -49,18 +47,19 @@ import com.thnki.classroom.utils.Otto;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.thnki.classroom.LoginActivity.LOGIN_USER_ID;
 import static com.thnki.classroom.R.string.leaves;
+import static com.thnki.classroom.model.Leaves.getCalendar;
 
-public class LeavesFragment extends Fragment implements EventsListener, ValueEventListener, OnDateSelectedListener, DatePickerDialog.OnDateSetListener
+public class LeavesFragment extends Fragment implements EventsListener, ValueEventListener,
+        OnDateSelectedListener, DatePickerDialog.OnDateSetListener
 {
     public static final String TAG = "LeavesFragment";
 
@@ -83,7 +82,6 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
     View mProgress;
 
     private DatabaseReference mLeavesRef;
-    private Query mLeavesQuery;
     private DatabaseReference mLeavesRootRef;
     private String mDateStartText;
     private String mDateEndText;
@@ -97,12 +95,20 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
     @Bind(R.id.selectMonthContainer)
     View selectMonthContainer;
 
-    private ArrayList<CalendarDay> mLeavesList;
+    private HashMap<String, Leaves> mLeavesList;
     private DatabaseReference mRootRef;
     private String mCurrentUserId;
+    private Leaves mLeave;
 
     public LeavesFragment()
     {
+    }
+
+    public static LeavesFragment getInstance(Leaves leave)
+    {
+        LeavesFragment fragment = new LeavesFragment();
+        fragment.mLeave = leave;
+        return fragment;
     }
 
     @Override
@@ -111,8 +117,7 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
     {
         View parentView = inflater.inflate(R.layout.fragment_leaves, container, false);
         ButterKnife.bind(this, parentView);
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        mCurrentUserId = preferences.getString(LOGIN_USER_ID, "");
+        mCurrentUserId = NavigationDrawerUtil.mCurrentUser.getUserId();
         mRootRef = FirebaseDatabase.getInstance().getReference();
         mLeavesRootRef = FirebaseDatabase.getInstance().getReference()
                 .child(Leaves.LEAVES);
@@ -163,6 +168,7 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
 
     private void showCurrentUserLeaves()
     {
+        mCurrentUserId = NavigationDrawerUtil.mCurrentUser.getUserId();
         switch (mCurrentUserId.charAt(0))
         {
             case 'a':
@@ -208,8 +214,8 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
         ImageUtil.loadCircularImg(getActivity(), url, mProfileImg);
         mProfileId.setText(uid);
         mProfileName.setText(name);
-
-        mLeavesRef = mLeavesRootRef.child(uid);
+        mCurrentUserId = uid;
+        mLeavesRef = mLeavesRootRef.child(uid).child(Leaves.MY_LEAVES);
         showLeaves();
     }
 
@@ -218,6 +224,16 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
     {
         super.onStart();
         Otto.register(this);
+        if (mLeave != null)
+        {
+            Calendar calendar = Leaves.getCalendar(mLeave.getFromDate());
+            onDateSet(null, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 0);
+            if (mLeave.getStatus() == Leaves.STATUS_APPLIED)
+            {
+                RequestedLeavesDialogFragment.getInstance(mLeave)
+                        .show(getFragmentManager(), RequestedLeavesDialogFragment.TAG);
+            }
+        }
     }
 
     @Override
@@ -255,6 +271,8 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
                 showCurrentUserLeaves();
                 break;
             case R.id.requestedLeaves:
+                RequestedLeavesDialogFragment.getInstance()
+                        .show(manager, RequestedLeavesDialogFragment.TAG);
                 break;
             case R.id.staffLeaves:
                 SelectStaffDialogFragment.getInstance()
@@ -269,9 +287,10 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
 
     private void showLeaves()
     {
-        mLeavesQuery = mLeavesRef.orderByKey()
+        Query leavesQuery = mLeavesRef.orderByKey()
                 .startAt(mDateStartText).endAt(mDateEndText);
-        mLeavesQuery.addListenerForSingleValueEvent(this);
+        leavesQuery.addValueEventListener(this);
+
     }
 
     @Override
@@ -280,10 +299,10 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
         ToastMsg.show(dataSnapshot.getChildrenCount() + "");
         mLeavesCalender.removeDecorators();
         Calendar calendar = Calendar.getInstance();
-        mLeavesCalender.addDecorator(new LeavesDecorator(dataSnapshot, getActivity()));
+
         if (mLeavesList == null)
         {
-            mLeavesList = new ArrayList<>();
+            mLeavesList = new HashMap<>();
         }
         else
         {
@@ -294,22 +313,22 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
             try
             {
                 String leaveDate = snapshot.getKey();
+                Leaves leave = snapshot.getValue(Leaves.class);
                 SimpleDateFormat format = new SimpleDateFormat(Leaves.DB_DATE_FORMAT, Locale.ENGLISH);
                 calendar.setTime(format.parse(leaveDate));
-                mLeavesList.add(CalendarDay.from(calendar));
+                mLeavesList.put(CalendarDay.from(calendar).toString(), leave);
             }
             catch (ParseException e)
             {
                 Log.d(TAG, e.getMessage());
             }
         }
-        mLeavesQuery.removeEventListener(this);
+        mLeavesCalender.addDecorators(LeavesDecorator.getDecorators(mLeavesList, getActivity()));
     }
 
     @Override
     public void onCancelled(DatabaseError databaseError)
     {
-        mLeavesQuery.removeEventListener(this);
     }
 
     @OnClick(R.id.addLeaves)
@@ -322,15 +341,14 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
     @Override
     public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected)
     {
-        if (mLeavesList != null && mLeavesList.contains(date))
+        String key = Leaves.getFirstDateDbKey(mLeavesList, date);
+        if (key != null)
         {
-            ToastMsg.show(date.getDay() + "/" + date.getMonth() + "/" + date.getYear());
-            SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String userId = preference.getString(LoginActivity.LOGIN_USER_ID, "");
-            LeavesDetailDialogFragment.getInstance(userId, Leaves.getDbKeyDate(date))
+            LeavesDetailDialogFragment.getInstance(mCurrentUserId, key)
                     .show(getFragmentManager(), LeavesDetailDialogFragment.TAG);
         }
     }
+
 
     @OnClick(R.id.increaseMonth)
     public void increaseMonth()
@@ -361,7 +379,7 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
     }
 
     @Override
-    public void onDateSet(DatePicker datePicker, int year, int month, int i2)
+    public void onDateSet(DatePicker datePicker, int year, int month, int date)
     {
         mLeavesCalender.setVisibility(View.INVISIBLE);
         final Calendar calendar = Calendar.getInstance();
@@ -398,7 +416,7 @@ public class LeavesFragment extends Fragment implements EventsListener, ValueEve
     @Subscribe
     public void showCurrentUserLeaves(Leaves leave)
     {
-        setStartEndDateText(Leaves.getCalendar(leave.getFromDate()));
+        setStartEndDateText(getCalendar(leave.getFromDate()));
         showCurrentUserLeaves();
     }
 }

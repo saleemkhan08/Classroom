@@ -16,17 +16,21 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:gravity="center"
-            android:layout_toLeftOf="@+id/deleteNotification"
             android:orientation="horizontal">
 
-            <com.thnki.classroom.views.SquareImageView
-                android:id="@+id/senderImage"
+            <RelativeLayout
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="10dp"
-                android:scaleType="centerCrop"
-                android:src="@mipmap/user_icon_accent"/>
+                android:layout_margin="10dp">
+
+                <com.thnki.classroom.views.SquareImageView
+                    android:id="@+id/userImage"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center_vertical"
+                    android:scaleType="centerCrop"
+                    android:src="@mipmap/user_icon_accent"/>
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/userInfo"
@@ -41,40 +45,51 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/senderName"
+                    android:id="@+id/fullName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/userTextPadding"
-                    android:text="Saleem"
+                    android:text="Saleem Khan"
                     android:textSize="@dimen/price_text_size"
                     android:textStyle="bold"/>
 
                 <TextView
-                    android:id="@+id/message"
+                    android:id="@+id/userId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Notification message"
+                    android:text="User Id : a01"
                     android:textSize="12sp"/>
 
                 <TextView
-                    android:id="@+id/dateTime"
-                    android:layout_marginTop="3dp"
+                    android:id="@+id/designation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="20/11/2017 15:20"
+                    android:text="Designation : Principal"
                     android:textSize="12sp"/>
             </LinearLayout>
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/deleteNotification"
+            android:id="@+id/optionsIconContainer"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_margin="10dp"
             android:background="@drawable/bg_drawable"
-            android:padding="5dp"
-            android:src="@drawable/ic_delete_black_48dp"/>
+            android:padding="8dp"
+            android:src="@drawable/ic_more_vert_black_48dp"/>
+
+        <ImageView
+            android:id="@+id/statusIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            android:padding="8dp"
+            android:visibility="gone"
+            />
+
     </RelativeLayout>
 </android.support.v7.widget.CardView>

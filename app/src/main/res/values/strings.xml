@@ -259,7 +259,8 @@
     <string name="please_enter_a_valid_address">Please enter a valid address</string>
     <string name="notes_will_be_displayed_after_review">Notes will be displayed after review..</string>
     <string name="unreviewed">Un-Reviewed</string>
-    <string name="pending">Pending Notes</string>
+    <string name="pendingNotes">Pending Notes</string>
+    <string name="pending">Pending</string>
     <string name="reviewedNotes">Reviewed Notes</string>
     <string name="approve">Approve</string>
     <string name="reject">Reject</string>
@@ -287,4 +288,22 @@
     <string name="password_must_contain_at_least_6_char">New password must contain at least 6 characters</string>
     <string name="new_password_did_not_match_with_confirm_password">New password did not match with confirm password</string>
     <string name="wrong_current_password">Worng Current Password</string>
+    <string name="has_applied_for_leave_on_following_days">has applied for leave on following days</string>
+    <string name="has_approved_following_leaves">has approved follwoing leaves</string>
+    <string name="has_rejected_follwoing_leaves">has rejected following leaves</string>
+    <string name="please_enter_the_notification_message">Please enter the notification message</string>
+    <string name="sending_notification">Sending notification</string>
+    <string name="notification_couldnt_be_sent">Notification Couldn\'t be sent</string>
+    <string name="leaveStatus">Leave Status</string>
+    <string name="has_cancelled_the_following_leave">has cancelled the following leave</string>
+    <string name="deleteAll">Delete All</string>
+    <string name="requested_leaves">Requested Leaves</string>
+    <string name="approvalPending">Approval Pending</string>
+    <string name="rejected">Rejected</string>
+    <string name="approved">Approved</string>
+    <string name="requested_leave_from">Requested leave from</string>
+    <string name="status">Status</string>
+    <string name="classTxt">Class</string>
+    <string name="submitting">Submitting...</string>
+    <string name="date">Date</string>
 </resources>

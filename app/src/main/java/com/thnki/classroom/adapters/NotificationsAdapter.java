@@ -1,5 +1,6 @@
 package com.thnki.classroom.adapters;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -9,7 +10,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
+import com.thnki.classroom.MainActivity;
 import com.thnki.classroom.R;
+import com.thnki.classroom.fragments.LeavesFragment;
+import com.thnki.classroom.model.Leaves;
+import com.thnki.classroom.model.Notes;
 import com.thnki.classroom.model.Notifications;
 import com.thnki.classroom.model.Progress;
 import com.thnki.classroom.model.ToastMsg;
@@ -20,13 +25,15 @@ public class NotificationsAdapter extends FirebaseRecyclerAdapter<Notifications,
 {
     private static final String TAG = "NotificationsAdapter";
     private DatabaseReference mNotificationRef;
+    Activity mActivity;
 
-    public static NotificationsAdapter getInstance(DatabaseReference reference)
+    public static NotificationsAdapter getInstance(DatabaseReference reference, Activity activity)
     {
         Log.d(TAG, "SubjectsAdapter getInstance: reference : " + reference);
         NotificationsAdapter fragment = new NotificationsAdapter(Notifications.class,
                 R.layout.notification_list_row, NotificationViewHolder.class, reference);
         fragment.mNotificationRef = reference;
+        fragment.mActivity = activity;
         return fragment;
     }
 
@@ -53,7 +60,15 @@ public class NotificationsAdapter extends FirebaseRecyclerAdapter<Notifications,
             @Override
             public void onClick(View view)
             {
-                Log.d(TAG, "onClick");
+                Leaves leave = model.getLeave();
+                if (leave != null)
+                {
+                    ((MainActivity) mActivity).showFragment(LeavesFragment.getInstance(leave), true, LeavesFragment.TAG);
+                }
+                else
+                {
+                    Notes notes = model.getNote();
+                }
             }
         });
 

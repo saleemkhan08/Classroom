@@ -55,7 +55,7 @@
         attrs:piv_animationType="thinWorm"
         attrs:piv_interactiveAnimation="true"
         attrs:piv_selectedColor="@color/colorAccent"
-        attrs:piv_unselectedColor="@color/gray"
+        attrs:piv_unselectedColor="@color/grey"
         attrs:piv_viewPager="@id/container"
         />
 </RelativeLayout>

@@ -117,6 +117,7 @@ public class AddOrEditSubjectsDialogFragment extends CustomDialogFragment implem
     @Override
     public void submit(View view)
     {
+        super.submit(view);
         mCurrentSubject.setSubjectName(mSubjectName.getText().toString());
         mCurrentSubject.setSubjectCode(mSubjectCode.getText().toString());
         mCurrentSubject.setClassCode(mCurrentClassCode);

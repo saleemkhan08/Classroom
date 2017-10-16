@@ -11,14 +11,14 @@
         android:background="@color/colorPrimary"
         app:tabMode="scrollable"
         app:tabSelectedTextColor="@color/white"
-        app:tabTextColor="@color/gray"/>
+        app:tabTextColor="@color/grey"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/notesRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/subjectsTab"
-        android:background="@color/gray"
+        android:background="@color/grey"
         android:clipToPadding="false"
         android:paddingTop="10dp"
         />

@@ -5,7 +5,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -68,11 +67,7 @@ public class SelectStudentDialogFragment extends CustomDialogFragment implements
         setDialogTitle(R.string.selectStudent);
         mErrorMsg.setText(R.string.noStudentsFound);
         showClassesTab();
-        hideSubmitBtn();
         setContainerHeight();
-        ViewGroup.LayoutParams params = mErrorMsg.getLayoutParams();
-        params.height = ViewGroup.LayoutParams.MATCH_PARENT;
-        mErrorMsg.setLayoutParams(params);
     }
 
     @Override

@@ -88,6 +88,7 @@ public class AddOrEditStaffDialogFragment extends CustomDialogFragment
     @Override
     public void submit(View view)
     {
+        super.submit(view);
         String staffName = mStaffName.getText().toString();
         String staffUserId = mStaffUserId.getText().toString();
         String qualification = mQualification.getText().toString();

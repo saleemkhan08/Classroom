@@ -40,7 +40,7 @@
                 android:paddingBottom="10dp"
                 android:text="@string/subTitle"
                 android:textAlignment="center"
-                android:textColor="@color/gray"
+                android:textColor="@color/grey"
                 android:textSize="@dimen/dialog_sub_title"
                 android:textStyle="bold"
                 android:visibility="gone"
@@ -72,7 +72,7 @@
             android:visibility="gone"
             app:tabMode="scrollable"
             app:tabSelectedTextColor="@color/white"
-            app:tabTextColor="@color/gray"/>
+            app:tabTextColor="@color/grey"/>
     </RelativeLayout>
 
 
@@ -101,14 +101,16 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/dialogContainer"
                 android:background="#ccc"
+                android:id="@+id/singleSubmitBtnContainer"
+                android:visibility="gone"
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/submitBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_drawable"
                     android:clickable="true"
+                    android:id="@+id/submitBtn"
                     android:gravity="center">
 
                     <TextView
@@ -124,6 +126,79 @@
 
                     <ImageView
                         android:id="@+id/submitBtnImg"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:padding="9dp"
+                        android:src="@mipmap/save_button"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:id="@+id/dualSubmitButtonContainer"
+                android:layout_below="@+id/dialogContainer"
+                android:background="#ccc"
+                android:weightSum="2"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/submitBtn1"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_drawable"
+                    android:clickable="true"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/submitBtn1Txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:gravity="center"
+                        android:padding="5dp"
+                        android:text="@string/submit"
+                        android:textAppearance="?android:textAppearanceMedium"
+                        android:textColor="@color/colorAccent"
+                        android:textStyle="bold"/>
+
+                    <ImageView
+                        android:id="@+id/submitBtn1Img"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:padding="9dp"
+                        android:src="@mipmap/save_button"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0.5dp"
+                    android:background="@color/colorAccent"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_height="match_parent"/>
+                <LinearLayout
+                    android:id="@+id/submitBtn2"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_drawable"
+                    android:clickable="true"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/submitBtn2Txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:gravity="center"
+                        android:padding="5dp"
+                        android:text="@string/submit"
+                        android:textAppearance="?android:textAppearanceMedium"
+                        android:textColor="@color/colorAccent"
+                        android:textStyle="bold"/>
+
+                    <ImageView
+                        android:id="@+id/submitBtn2Img"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:padding="9dp"

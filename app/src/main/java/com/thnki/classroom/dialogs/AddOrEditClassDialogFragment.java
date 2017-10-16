@@ -96,6 +96,7 @@ public class AddOrEditClassDialogFragment extends CustomDialogFragment implement
     @Override
     public void submit(View view)
     {
+        super.submit(view);
         String className = mClassName.getText().toString();
         String classCode = mClassCode.getText().toString();
         String classTeacherId = ((Staff) mClassTeacher.getTag()).getUserId();

@@ -71,6 +71,7 @@ public class AddStudentsDialogFragment extends CustomDialogFragment
     @Override
     public void submit(View view)
     {
+        super.submit(view);
         String studentCountText = mStudentCount.getText().toString();
         if (TextUtils.isEmpty(studentCountText))
         {

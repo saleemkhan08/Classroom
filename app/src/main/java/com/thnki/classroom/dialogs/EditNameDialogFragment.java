@@ -64,6 +64,7 @@ public class EditNameDialogFragment extends CustomDialogFragment
     @Override
     public void submit(View view)
     {
+        super.submit(view);
         String fullName = name.getText().toString();
         if (TextUtils.isEmpty(fullName))
         {

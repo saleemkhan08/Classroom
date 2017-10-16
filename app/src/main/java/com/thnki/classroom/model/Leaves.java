@@ -10,19 +10,47 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class Leaves
 {
     public static final String LEAVES = "leaves";
-    public static final java.lang.String DB_DATE_FORMAT = "yyyyMMdd";
+    public static final String DB_DATE_FORMAT = "yyyyMMdd";
     public static final String DATE_FORMAT = "dd-MM-yyyy";
     private static final String TAG = "Leaves";
+    public static final String MY_LEAVES = "myLeaves";
+    public static final String REQUESTED_LEAVES = "requestedLeaves";
+    public static final int STATUS_APPROVED_1 = 11;
+    public static final int STATUS_PENDING_1 = 10;
+    public static final int STATUS_REJECTED_1 = -11;
+    public static final String STATUS = "status";
+    public static final String LEAVE_FROM_DATE = "fromDate";
+    public static final int STATUS_CANCELLED = 2;
+
     private String fromDate;
     private String toDate;
     private String reason;
-    private String approver;
+    private String approverId;
+    private int status;
+    private String requesterId;
+
+    public static final int STATUS_APPROVED = 1;
+    public static final int STATUS_APPLIED = 0;
+    public static final int STATUS_REJECTED = -1;
+    private String requestedLeaveKey;
+
+    public void setRequesterId(String requesterId)
+    {
+        this.requesterId = requesterId;
+    }
+
+    public String getRequesterId()
+    {
+        return this.requesterId;
+    }
 
     public String getFromDate()
     {
@@ -54,14 +82,14 @@ public class Leaves
         this.reason = reason;
     }
 
-    public String getApprover()
+    public String getApproverId()
     {
-        return approver.trim();
+        return approverId.trim();
     }
 
-    public void setApprover(String approver)
+    public void setApproverId(String approverId)
     {
-        this.approver = approver;
+        this.approverId = approverId;
     }
 
     public boolean validate()
@@ -154,6 +182,21 @@ public class Leaves
                 + get2DigitNum(calendar.get(Calendar.DAY_OF_MONTH));
     }
 
+    public static String getDisplayDate(String dbKeyDate)
+    {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat format = new SimpleDateFormat(DB_DATE_FORMAT, Locale.ENGLISH);
+        try
+        {
+            calendar.setTime(format.parse(dbKeyDate));
+            return getDisplayDate(calendar);
+        }
+        catch (ParseException e)
+        {
+            return "";
+        }
+    }
+
     public static String getDbRetrieveKeyDate(CalendarDay calendar)
     {
         return "" + calendar.getYear() + get2DigitNum(calendar.getMonth()) + get2DigitNum(calendar.getDay());
@@ -165,15 +208,15 @@ public class Leaves
                 + get2DigitNum(calendar.get(Calendar.DAY_OF_MONTH));
     }
 
-    private static String get2DigitNum(int num)
+    public static String get2DigitNum(int num)
     {
         return (num < 10) ? "0" + num : "" + num;
     }
 
     public static String getDisplayDate(Calendar calendar)
     {
-        return get2DigitNum(calendar.get(Calendar.DAY_OF_MONTH)) + "/"
-                + get2DigitNum(calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.YEAR);
+        return get2DigitNum(calendar.get(Calendar.DAY_OF_MONTH)) + "-"
+                + get2DigitNum(calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.YEAR);
     }
 
     public static String getDbKeyDate(int year, int month, int day)
@@ -231,5 +274,94 @@ public class Leaves
         return "" + calendar.get(Calendar.YEAR) + get2DigitNum(calendar.get(Calendar.MONTH) + 1)
                 + get2DigitNum(calendar.get(Calendar.DAY_OF_MONTH)) + get2DigitNum(calendar.get(Calendar.HOUR_OF_DAY))
                 + get2DigitNum(calendar.get(Calendar.MINUTE)) + get2DigitNum(calendar.get(Calendar.SECOND));
+    }
+
+    public int getStatus()
+    {
+        return status;
+    }
+
+    public void setStatus(int status)
+    {
+        this.status = status;
+    }
+
+    public int statusText()
+    {
+        switch (getStatus())
+        {
+            default:
+                return R.string.approvalPending;
+
+            case STATUS_APPROVED:
+                return R.string.approved;
+
+            case STATUS_REJECTED:
+                return R.string.rejected;
+        }
+    }
+
+    public static String getFirstDateDbKey(HashMap<String, Leaves> mLeavesList, CalendarDay date)
+    {
+        Calendar key;
+        for (Map.Entry<String, Leaves> entry : mLeavesList.entrySet())
+        {
+            key = getFirstDateDbKey(entry.getValue(), date);
+            if (key != null)
+            {
+                return getDbKeyDate(key);
+            }
+        }
+        return null;
+    }
+
+    public static String getDbKeyDate(String fromDate)
+    {
+        return getDbKeyDate(getCalendar(fromDate));
+    }
+
+    private static Calendar getFirstDateDbKey(Leaves leave, CalendarDay date)
+    {
+        Calendar currentDate = date.getCalendar();
+        Calendar startDate = Calendar.getInstance();
+        Calendar endDate = Calendar.getInstance();
+        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT, Locale.ENGLISH);
+        try
+        {
+            startDate.setTime(format.parse(leave.getFromDate()));
+            endDate.setTime(format.parse(leave.getToDate()));
+        }
+        catch (ParseException e)
+        {
+            return null;
+        }
+        if (!(currentDate.before(startDate) || currentDate.after(endDate)))
+        {
+            return startDate;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof Leaves)
+        {
+            Leaves leave = (Leaves) obj;
+            return leave.getFromDate().equals(getFromDate())
+                    && leave.getToDate().equals(getToDate())
+                    && leave.getRequesterId().equals(getRequesterId());
+        }
+        return false;
+    }
+
+    public String getRequestedLeaveKey()
+    {
+        return requestedLeaveKey;
+    }
+
+    public void setRequestedLeaveKey(String requestedLeaveKey)
+    {
+        this.requestedLeaveKey = requestedLeaveKey;
     }
 }

@@ -2,6 +2,9 @@ package com.thnki.classroom.model;
 
 import android.text.TextUtils;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public abstract class User
 {
     public static final String FULL_NAME = "fullName";
@@ -127,4 +130,17 @@ public abstract class User
     }
 
     public abstract String userType();
+
+    public static DatabaseReference getUserRef(String userId)
+    {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        if (userId.charAt(0) == 'a' || userId.charAt(0) == 's')
+        {
+            return ref.child(User.STAFF).child(userId);
+        }
+        else
+        {
+            return ref.child(User.STUDENTS).child(userId.substring(0, 3)).child(userId);
+        }
+    }
 }

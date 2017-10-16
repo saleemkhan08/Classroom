@@ -69,6 +69,7 @@ public class ChangePasswordDialogFragment extends CustomDialogFragment
     @Override
     public void submit(View view)
     {
+        super.submit(view);
         String currentPassword = this.currentPassword.getText().toString();
         String newPassword = this.newPassword.getText().toString();
         String confirmPassword = this.confirmPassword.getText().toString();

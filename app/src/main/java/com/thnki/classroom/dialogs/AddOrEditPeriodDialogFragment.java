@@ -141,6 +141,7 @@ public class AddOrEditPeriodDialogFragment extends CustomDialogFragment implemen
     @Override
     public void submit(View view)
     {
+        super.submit(view);
         mTimeTable.setStartTime(mStartTime.getText().toString());
         mTimeTable.setEndTime(mEndTime.getText().toString());
         if (TextUtils.isEmpty(mTimeTable.getStartTime()))

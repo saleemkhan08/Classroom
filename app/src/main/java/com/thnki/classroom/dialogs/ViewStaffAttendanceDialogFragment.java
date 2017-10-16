@@ -70,7 +70,6 @@ public class ViewStaffAttendanceDialogFragment extends CustomDialogFragment impl
         super.onStart();
         setSubTitle(getFormattedDate());
         setDialogTitle(R.string.absentees);
-        hideSubmitBtn();
         mAttendanceListRecyclerView.setAdapter(AttendanceFbAdapter.getInstance(mAttendanceRef));
         mAttendanceListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }

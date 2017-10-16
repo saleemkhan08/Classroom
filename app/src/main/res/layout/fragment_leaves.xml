@@ -74,7 +74,7 @@
                 android:layout_below="@+id/userDetails"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                app:mcv_selectionColor="@color/colorAccent"
+                app:mcv_selectionColor="@color/colorSelection"
                 app:mcv_showOtherDates="all"
                 />
 

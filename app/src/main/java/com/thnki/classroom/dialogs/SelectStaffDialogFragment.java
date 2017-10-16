@@ -67,7 +67,6 @@ public class SelectStaffDialogFragment extends CustomDialogFragment implements V
         super.onStart();
         setDialogTitle(R.string.selectStaff);
         mErrorMsg.setText(R.string.noStaffFound);
-        hideSubmitBtn();
         mStaffListRecyclerView.setAdapter(SimpleStaffAdapter.getInstance(mStaffDbRef));
         mStaffListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
