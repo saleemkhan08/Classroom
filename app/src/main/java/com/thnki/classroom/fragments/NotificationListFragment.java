@@ -77,7 +77,8 @@ public class NotificationListFragment extends Fragment implements EventsListener
                 .child(NavigationDrawerUtil.mCurrentUser.getUserId());
         NotificationsAdapter adapter = NotificationsAdapter.getInstance(notificationsDbRef, getActivity());
         notificationListRecyclerView.setAdapter(adapter);
-        notificationListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        notificationListRecyclerView.setLayoutManager(manager);
 
         notificationsDbRef.addValueEventListener(new ValueEventListener()
         {

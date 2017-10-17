@@ -29,8 +29,7 @@ public class RequestedLeavesAdapter extends FirebaseRecyclerAdapter<Leaves, Requ
     public static RequestedLeavesAdapter getInstance(DatabaseReference reference)
     {
         return new RequestedLeavesAdapter(Leaves.class,
-                R.layout.requested_leave_row, RequestedLeavesViewHolder.class, reference
-                .orderByChild(Leaves.LEAVE_FROM_DATE));
+                R.layout.requested_leave_row, RequestedLeavesViewHolder.class, reference.orderByChild(Leaves.REQUESTED_LEAVES_KEY));
     }
 
     private RequestedLeavesAdapter(Class<Leaves> modelClass, int modelLayout,
@@ -82,7 +81,7 @@ public class RequestedLeavesAdapter extends FirebaseRecyclerAdapter<Leaves, Requ
 
     private void loadUserDetails(final RequestedLeavesViewHolder viewHolder, Leaves model)
     {
-        DatabaseReference ref = User.getUserRef(model.getRequesterId());
+        DatabaseReference ref = User.getRef(model.getRequesterId());
         ref.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -158,7 +157,7 @@ public class RequestedLeavesAdapter extends FirebaseRecyclerAdapter<Leaves, Requ
 
         leavesDbRef.child(leave.getApproverId())
                 .child(Leaves.REQUESTED_LEAVES)
-                .child(leave.getRequestedLeaveKey())
+                .child(leave.requestedLeaveKey())
                 .child(Leaves.STATUS).setValue(leave.getStatus());
 
         NotificationDialogFragment.getInstance(leave).sendLeavesRelatedNotification(context);

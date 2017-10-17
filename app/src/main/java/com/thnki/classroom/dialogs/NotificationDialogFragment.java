@@ -17,9 +17,8 @@ import com.thnki.classroom.model.Notes;
 import com.thnki.classroom.model.Notifications;
 import com.thnki.classroom.model.Progress;
 import com.thnki.classroom.model.ToastMsg;
+import com.thnki.classroom.utils.DateTimeUtil;
 import com.thnki.classroom.utils.NavigationDrawerUtil;
-
-import java.util.Calendar;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -130,23 +129,28 @@ public class NotificationDialogFragment extends CustomDialogFragment
     public void sendLeavesRelatedNotification(Context context)
     {
         mContext = context;
-        mCurrentNotification.setLeave(leaves);
-        mCurrentNotification.setNote(null);
+        mCurrentNotification.setNotesId(null);
         switch (leaves.getStatus())
         {
             case Leaves.STATUS_REJECTED:
                 mCurrentNotification.setMessage(getLeavesRejectionMsg());
-                mNotificationDbRef = notificationsRootRef.child(leaves.getApproverId());
+                mNotificationDbRef = notificationsRootRef.child(leaves.getRequesterId());
+                mCurrentNotification.setLeaveId(leaves.dbKeyDate());
+                mCurrentNotification.setLeaveRefType(Leaves.MY_LEAVES);
                 break;
 
             case Leaves.STATUS_APPROVED:
                 mCurrentNotification.setMessage(getLeavesApprovalMsg());
-                mNotificationDbRef = notificationsRootRef.child(leaves.getApproverId());
+                mNotificationDbRef = notificationsRootRef.child(leaves.getRequesterId());
+                mCurrentNotification.setLeaveId(leaves.dbKeyDate());
+                mCurrentNotification.setLeaveRefType(Leaves.MY_LEAVES);
                 break;
 
             case Leaves.STATUS_APPLIED:
                 mCurrentNotification.setMessage(getLeavesApplicationMsg());
                 mNotificationDbRef = notificationsRootRef.child(leaves.getApproverId());
+                mCurrentNotification.setLeaveId(leaves.dbKeyDate());
+                mCurrentNotification.setLeaveRefType(Leaves.REQUESTED_LEAVES);
                 break;
 
             case Leaves.STATUS_CANCELLED:
@@ -187,8 +191,8 @@ public class NotificationDialogFragment extends CustomDialogFragment
 
     private void showNotesRelatedNotifications()
     {
-        mCurrentNotification.setLeave(null);
-        mCurrentNotification.setNote(notes);
+        mCurrentNotification.setLeaveId(null);
+        //mCurrentNotification.setNotesId(notes.);
         switch (notes.getNotesStatus())
         {
             case Notes.REJECTED:
@@ -233,8 +237,8 @@ public class NotificationDialogFragment extends CustomDialogFragment
     public void sendNotification()
     {
         Progress.show(R.string.sending_notification);
-        String key = Leaves.getDbKeyDateTime(Calendar.getInstance());
-        mCurrentNotification.setDateTime(-Long.parseLong(key));
+        String key = DateTimeUtil.getKey();
+        mCurrentNotification.dateTime(key);
 
         mNotificationDbRef.child(key).setValue(mCurrentNotification).addOnCompleteListener(new OnCompleteListener<Void>()
         {

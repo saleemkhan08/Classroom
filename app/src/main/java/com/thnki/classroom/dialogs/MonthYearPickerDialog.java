@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.view.View;
 import android.widget.NumberPicker;
 
-import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.thnki.classroom.R;
 
 import java.util.Calendar;
@@ -20,9 +19,9 @@ public class MonthYearPickerDialog extends CustomDialogFragment
     private DatePickerDialog.OnDateSetListener listener;
     public static final String[] MONTH_ARRAY = {"Jan", "Feb", "Mar", "Apr", "May", "June", "July",
             "Aug", "Sep", "Oct", "Nov", "Dec"};
-    private CalendarDay mCurrentDate;
+    private Calendar mCurrentDate;
 
-    public static MonthYearPickerDialog getInstance(CalendarDay currentDate)
+    public static MonthYearPickerDialog getInstance(Calendar currentDate)
     {
         MonthYearPickerDialog fragment = new MonthYearPickerDialog();
         fragment.mCurrentDate = currentDate;
@@ -61,7 +60,7 @@ public class MonthYearPickerDialog extends CustomDialogFragment
     {
         ButterKnife.bind(this, parentView);
         Calendar cal = Calendar.getInstance();
-        cal.set(mCurrentDate.getYear(), mCurrentDate.getMonth(), mCurrentDate.getDay());
+        cal.set(mCurrentDate.get(Calendar.YEAR), mCurrentDate.get(Calendar.MONTH), mCurrentDate.get(Calendar.DAY_OF_MONTH));
 
         monthPicker.setMinValue(0);
         monthPicker.setMaxValue(11);

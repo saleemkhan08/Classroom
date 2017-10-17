@@ -119,12 +119,12 @@ public class NotesAdapter extends FirebaseRecyclerAdapter<Notes, NotesViewHolder
                             {
                                 FirebaseDatabase.getInstance().getReference().child(Notes.NOTES)
                                         .child(mNotesClassifier.getClassId()).child(mNotesClassifier.getSubjectId())
-                                        .child(model.dateKey()).setValue(model).addOnCompleteListener(new OnCompleteListener<Void>()
+                                        .child(model.getDate()).setValue(model).addOnCompleteListener(new OnCompleteListener<Void>()
                                 {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task)
                                     {
-                                        mNotesDbRef.getRef().child(model.dateKey()).removeValue();
+                                        mNotesDbRef.getRef().child(model.getDate()).removeValue();
                                     }
                                 });
                             }
@@ -193,7 +193,7 @@ public class NotesAdapter extends FirebaseRecyclerAdapter<Notes, NotesViewHolder
 
     private void updateRejectionStatus(Notes notes)
     {
-        mNotesDbRef.getRef().child(notes.dateKey()).setValue(notes);
+        mNotesDbRef.getRef().child(notes.getDate()).setValue(notes);
     }
 
     private void showNotificationDialog(Notes model, OnDismissListener listener)
@@ -260,12 +260,12 @@ public class NotesAdapter extends FirebaseRecyclerAdapter<Notes, NotesViewHolder
         StorageReference notesStorageRef = FirebaseStorage.getInstance().getReference()
                 .child(Notes.NOTES).child(mNotesClassifier.getClassId())
                 .child(mNotesClassifier.getSubjectId());
-        notesStorageRef.child(notes.dateKey()).delete().addOnCompleteListener(new OnCompleteListener<Void>()
+        notesStorageRef.child(notes.getDate()).delete().addOnCompleteListener(new OnCompleteListener<Void>()
         {
             @Override
             public void onComplete(@NonNull Task<Void> task)
             {
-                mNotesDbRef.getRef().child(notes.dateKey()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>()
+                mNotesDbRef.getRef().child(notes.getDate()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>()
                 {
                     @Override
                     public void onComplete(@NonNull Task<Void> task)

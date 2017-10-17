@@ -13,13 +13,14 @@ import com.google.firebase.database.Query;
 import com.thnki.classroom.MainActivity;
 import com.thnki.classroom.R;
 import com.thnki.classroom.fragments.LeavesFragment;
-import com.thnki.classroom.model.Leaves;
-import com.thnki.classroom.model.Notes;
 import com.thnki.classroom.model.Notifications;
 import com.thnki.classroom.model.Progress;
 import com.thnki.classroom.model.ToastMsg;
 import com.thnki.classroom.utils.ImageUtil;
+import com.thnki.classroom.utils.NavigationDrawerUtil;
 import com.thnki.classroom.viewholders.NotificationViewHolder;
+
+import static com.thnki.classroom.model.Leaves.REQUESTED_LEAVES;
 
 public class NotificationsAdapter extends FirebaseRecyclerAdapter<Notifications, NotificationViewHolder>
 {
@@ -30,8 +31,9 @@ public class NotificationsAdapter extends FirebaseRecyclerAdapter<Notifications,
     public static NotificationsAdapter getInstance(DatabaseReference reference, Activity activity)
     {
         Log.d(TAG, "SubjectsAdapter getInstance: reference : " + reference);
+
         NotificationsAdapter fragment = new NotificationsAdapter(Notifications.class,
-                R.layout.notification_list_row, NotificationViewHolder.class, reference);
+                R.layout.notification_list_row, NotificationViewHolder.class, reference.orderByChild("dateTime"));
         fragment.mNotificationRef = reference;
         fragment.mActivity = activity;
         return fragment;
@@ -60,14 +62,20 @@ public class NotificationsAdapter extends FirebaseRecyclerAdapter<Notifications,
             @Override
             public void onClick(View view)
             {
-                Leaves leave = model.getLeave();
-                if (leave != null)
+                String leaveId = model.getLeaveId();
+                String leaveRefType = model.getLeaveRefType();
+                String notesId = model.getNotesId();
+                String userId = model.getLeaveRefType().equals(REQUESTED_LEAVES) ?
+                        model.getSenderId() : NavigationDrawerUtil.mCurrentUser.getUserId();
+                if (leaveId != null && leaveRefType != null)
                 {
-                    ((MainActivity) mActivity).showFragment(LeavesFragment.getInstance(leave), true, LeavesFragment.TAG);
+                    ((MainActivity) mActivity).showFragment(LeavesFragment
+                                    .getInstance(leaveId, userId, leaveRefType),
+                            true, LeavesFragment.TAG);
                 }
-                else
+                else if (notesId != null)
                 {
-                    Notes notes = model.getNote();
+                    //Notes link
                 }
             }
         });
@@ -78,7 +86,7 @@ public class NotificationsAdapter extends FirebaseRecyclerAdapter<Notifications,
             public void onClick(View view)
             {
                 Progress.show(R.string.deleting);
-                mNotificationRef.child(model.dateTimeKey()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>()
+                mNotificationRef.child(model.dateTime()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>()
                 {
                     @Override
                     public void onComplete(@NonNull Task<Void> task)

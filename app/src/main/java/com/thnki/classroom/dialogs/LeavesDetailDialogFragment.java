@@ -117,7 +117,7 @@ public class LeavesDetailDialogFragment extends CustomDialogFragment implements 
         NotificationDialogFragment.getInstance(mLeave).sendLeavesRelatedNotification(getActivity());
 
         DatabaseReference requestedLeavesDbRef = mLeavesRootDbRef.child(mLeave.getApproverId()).child(REQUESTED_LEAVES)
-                .child(mLeave.getRequestedLeaveKey());
+                .child(mLeave.requestedLeaveKey());
         requestedLeavesDbRef.removeValue().addOnCompleteListener(new OnCompleteListener<Void>()
         {
             @Override

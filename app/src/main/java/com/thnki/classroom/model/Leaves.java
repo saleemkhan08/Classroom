@@ -23,6 +23,7 @@ public class Leaves
     private static final String TAG = "Leaves";
     public static final String MY_LEAVES = "myLeaves";
     public static final String REQUESTED_LEAVES = "requestedLeaves";
+    public static final String REQUESTED_LEAVES_KEY = "requestedLeaveKey";
     public static final int STATUS_APPROVED_1 = 11;
     public static final int STATUS_PENDING_1 = 10;
     public static final int STATUS_REJECTED_1 = -11;
@@ -40,7 +41,7 @@ public class Leaves
     public static final int STATUS_APPROVED = 1;
     public static final int STATUS_APPLIED = 0;
     public static final int STATUS_REJECTED = -1;
-    private String requestedLeaveKey;
+    private long requestedLeaveKey;
 
     public void setRequesterId(String requesterId)
     {
@@ -55,6 +56,11 @@ public class Leaves
     public String getFromDate()
     {
         return fromDate.trim();
+    }
+
+    public String dbKeyDate()
+    {
+        return Leaves.getDbKeyDate(getFromDate());
     }
 
     public void setFromDate(String fromDate)
@@ -355,13 +361,23 @@ public class Leaves
         return false;
     }
 
-    public String getRequestedLeaveKey()
+    public long getRequestedLeaveKey()
     {
         return requestedLeaveKey;
     }
 
-    public void setRequestedLeaveKey(String requestedLeaveKey)
+    public void setRequestedLeaveKey(long requestedLeaveKey)
     {
         this.requestedLeaveKey = requestedLeaveKey;
+    }
+
+    public String requestedLeaveKey()
+    {
+        return "" + (getRequestedLeaveKey() * (-1));
+    }
+
+    public void requestedLeaveKey(String requestedLeaveKey)
+    {
+        setRequestedLeaveKey((-1) * Long.parseLong(requestedLeaveKey));
     }
 }

@@ -16,8 +16,9 @@ public class Notifications
     private String senderPhotoUrl;
     private String senderId;
     private long dateTime;
-    private Leaves leave;
-    private Notes note;
+    private String leaveId;
+    private String notesId;
+    private String leaveRefType;
 
     public String getMessage()
     {
@@ -64,11 +65,6 @@ public class Notifications
         return dateTime;
     }
 
-    public String dateTimeKey()
-    {
-        return "" + (-dateTime);
-    }
-
     public void setDateTime(long dateTime)
     {
         this.dateTime = dateTime;
@@ -80,7 +76,7 @@ public class Notifications
         try
         {
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(format.parse(dateTimeKey()));
+            calendar.setTime(format.parse(((-1) * dateTime) + ""));
             return MONTH_ARRAY[calendar.get(Calendar.MONTH)] + "-" +
                     calendar.get(Calendar.DAY_OF_MONTH) + " "
                     + Leaves.get2DigitNum(calendar.get(Calendar.HOUR))
@@ -94,23 +90,43 @@ public class Notifications
         return null;
     }
 
-    public Leaves getLeave()
+    public String getLeaveId()
     {
-        return leave;
+        return leaveId;
     }
 
-    public void setLeave(Leaves leave)
+    public void setLeaveId(String leaveId)
     {
-        this.leave = leave;
+        this.leaveId = leaveId;
     }
 
-    public Notes getNote()
+    public String getNotesId()
     {
-        return note;
+        return notesId;
     }
 
-    public void setNote(Notes note)
+    public void setNotesId(String notesId)
     {
-        this.note = note;
+        this.notesId = notesId;
+    }
+
+    public String dateTime()
+    {
+        return "" + (getDateTime() * (-1));
+    }
+
+    public void dateTime(String key)
+    {
+        setDateTime((-1) * Long.parseLong(key));
+    }
+
+    public String getLeaveRefType()
+    {
+        return leaveRefType;
+    }
+
+    public void setLeaveRefType(String leaveRefType)
+    {
+        this.leaveRefType = leaveRefType;
     }
 }

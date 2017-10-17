@@ -22,7 +22,7 @@ public class Notes
     private String submitterId;
     private String submitterName;
     private String submitterPhotoUrl;
-    private long date;
+    private String date;
     private String notesStatus;
 
     public Notes()
@@ -90,17 +90,12 @@ public class Notes
         this.submitterId = submitterId;
     }
 
-    public long getDate()
+    public String getDate()
     {
         return date;
     }
 
-    public String dateKey()
-    {
-        return "" + (-date);
-    }
-
-    public void setDate(long date)
+    public void setDate(String date)
     {
         this.date = date;
     }
@@ -133,7 +128,7 @@ public class Notes
         try
         {
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(format.parse(dateKey()));
+            calendar.setTime(format.parse(date));
             return MONTH_ARRAY[calendar.get(Calendar.MONTH)] + "-" +
                     calendar.get(Calendar.DAY_OF_MONTH) + " "
                     + calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE)

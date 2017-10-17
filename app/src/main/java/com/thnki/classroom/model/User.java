@@ -131,7 +131,7 @@ public abstract class User
 
     public abstract String userType();
 
-    public static DatabaseReference getUserRef(String userId)
+    public static DatabaseReference getRef(String userId)
     {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         if (userId.charAt(0) == 'a' || userId.charAt(0) == 's')

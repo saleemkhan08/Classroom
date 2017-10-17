@@ -47,7 +47,6 @@ import com.thnki.classroom.adapters.StaffFirebaseListAdapter;
 import com.thnki.classroom.dialogs.NotificationDialogFragment;
 import com.thnki.classroom.listeners.EventsListener;
 import com.thnki.classroom.listeners.OnDismissListener;
-import com.thnki.classroom.model.Leaves;
 import com.thnki.classroom.model.Notes;
 import com.thnki.classroom.model.NotesClassifier;
 import com.thnki.classroom.model.NotesImage;
@@ -55,12 +54,12 @@ import com.thnki.classroom.model.Progress;
 import com.thnki.classroom.model.Staff;
 import com.thnki.classroom.model.ToastMsg;
 import com.thnki.classroom.utils.ActionBarUtil;
+import com.thnki.classroom.utils.DateTimeUtil;
 import com.thnki.classroom.utils.ItemMovementCallbackHelper;
 import com.thnki.classroom.utils.NavigationDrawerUtil;
 import com.thnki.classroom.utils.Otto;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -372,9 +371,9 @@ public class AddOrEditNotesFragment extends Fragment implements EventsListener, 
         Staff staff = (Staff) mNotesApprover.getTag();
         notes.setReviewerId(staff.getUserId());
 
-        if (notes.getDate() >= 0)
+        if (notes.getDate() == null)
         {
-            notes.setDate(-Long.parseLong(getCurrentDateKey()));
+            notes.setDate(DateTimeUtil.getKey());
         }
 
         notes.setNotesDescription(mNotesDescription.getText().toString().trim());
@@ -395,7 +394,7 @@ public class AddOrEditNotesFragment extends Fragment implements EventsListener, 
         else
         {
             Progress.show(R.string.uploading);
-            StorageReference ref = mNotesStorageRef.child(notes.dateKey());
+            StorageReference ref = mNotesStorageRef.child(notes.getDate());
             final int noOfUploadingPhoto = mImageList.size();
             Log.d("fixImageOrderIssue", "mImageList : " + mImageList);
             if (noOfUploadingPhoto > 0)
@@ -487,7 +486,7 @@ public class AddOrEditNotesFragment extends Fragment implements EventsListener, 
     private void saveNotes(final Notes notes)
     {
         Log.d("fixImageOrderIssue", "notes.getNotesImages() : " + notes.getNotesImages());
-        mNotesDbRef.child(notes.dateKey()).setValue(notes).addOnCompleteListener(new OnCompleteListener<Void>()
+        mNotesDbRef.child(notes.getDate()).setValue(notes).addOnCompleteListener(new OnCompleteListener<Void>()
         {
             @Override
             public void onComplete(@NonNull Task<Void> task)
@@ -518,8 +517,4 @@ public class AddOrEditNotesFragment extends Fragment implements EventsListener, 
         });
     }
 
-    private String getCurrentDateKey()
-    {
-        return Leaves.getDbKeyDateTime(Calendar.getInstance());
-    }
 }

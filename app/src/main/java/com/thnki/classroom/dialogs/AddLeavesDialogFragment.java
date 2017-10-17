@@ -100,7 +100,7 @@ public class AddLeavesDialogFragment extends CustomDialogFragment implements Ada
         Staff staff = (Staff) mApprover.getTag();
         leave.setStatus(Leaves.STATUS_APPLIED);
         leave.setApproverId(staff.getUserId());
-        leave.setRequestedLeaveKey(DateTimeUtil.getKey());
+        leave.requestedLeaveKey(DateTimeUtil.getKey());
         leave.setRequesterId(NavigationDrawerUtil.mCurrentUser.getUserId());
 
 
@@ -116,7 +116,7 @@ public class AddLeavesDialogFragment extends CustomDialogFragment implements Ada
                 public void onComplete(@NonNull Task<Void> task)
                 {
 
-                    requestedLeaveRef.child(leave.getRequestedLeaveKey()).setValue(leave)
+                    requestedLeaveRef.child(leave.requestedLeaveKey()).setValue(leave)
                             .addOnCompleteListener(new OnCompleteListener<Void>()
                             {
                                 @Override
