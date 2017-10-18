@@ -1,5 +1,7 @@
 package com.thnki.classroom.model;
 
+import java.util.Objects;
+
 public class Students extends User
 {
     private String className;
@@ -28,5 +30,23 @@ public class Students extends User
     public String classId()
     {
         return getUserId().substring(0, 3);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof Students && Objects.equals(getUserId(), ((Students) obj).getUserId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hashCode(getUserId());
+    }
+
+    @Override
+    public String toString()
+    {
+        return getUserId();
     }
 }

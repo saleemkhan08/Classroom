@@ -36,6 +36,7 @@ import com.thnki.classroom.utils.Otto;
 import com.thnki.classroom.utils.TransitionUtil;
 
 import java.util.Calendar;
+import java.util.LinkedHashSet;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -70,6 +71,7 @@ public class StudentsListFragment extends ClassTabFragment implements EventsList
     private DatePickerDialog mDatePickerDialog;
     private DatabaseReference mStudentsDbRef;
     private DatabaseReference mClassesDbRef;
+    private LinkedHashSet<Students> studentsSet;
 
     public StudentsListFragment()
     {
@@ -131,7 +133,7 @@ public class StudentsListFragment extends ClassTabFragment implements EventsList
         Log.d(TAG, "setUpRecyclerView");
         mStudentsDbRef = mRootRef.child(Students.STUDENTS).child(mCurrentClass.getCode());
         mClassesDbRef = mRootRef.child(Classes.CLASSES).child(mCurrentClass.getCode());
-        mAdapter = StudentsAdapter.getInstance(mStudentsDbRef, getActivity());
+        mAdapter = StudentsAdapter.getInstance(mStudentsDbRef);
         mStudentsListRecyclerView.setAdapter(mAdapter);
         mStudentsListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mStudentsListRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
@@ -167,10 +169,26 @@ public class StudentsListFragment extends ClassTabFragment implements EventsList
                 if (dataSnapshot.getChildrenCount() <= 0)
                 {
                     mErrorMsg.setVisibility(View.VISIBLE);
+                    if (studentsSet == null)
+                    {
+                        studentsSet = new LinkedHashSet<>();
+                    }
+                    else
+                    {
+                        studentsSet.clear();
+                    }
                 }
                 else
                 {
                     mErrorMsg.setVisibility(View.GONE);
+                    if (studentsSet == null)
+                    {
+                        studentsSet = new LinkedHashSet<>();
+                    }
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                    {
+                        studentsSet.add(snapshot.getValue(Students.class));
+                    }
                 }
             }
 
@@ -185,16 +203,24 @@ public class StudentsListFragment extends ClassTabFragment implements EventsList
     @OnClick(R.id.attendanceFab)
     public void takeAttendance(View view)
     {
-        mAdapter.enableAttendance();
-        mSaveAttendanceFab.setVisibility(View.VISIBLE);
-        mTakeAttendanceFab.setVisibility(View.GONE);
+        if (studentsSet.size() > 0)
+        {
+            mAdapter.enableAttendance(studentsSet);
+            mSaveAttendanceFab.setVisibility(View.VISIBLE);
+            mTakeAttendanceFab.setVisibility(View.GONE);
+        }
+        else
+        {
+            ToastMsg.show(R.string.student_list_is_empty);
+        }
     }
 
     @OnClick(R.id.savefab)
     public void saveAttendance(View view)
     {
         onBackPressed();
-        StudentAttendanceListFragment fragment = StudentAttendanceListFragment.getInstance(mAdapter.mUnSelectedStudents, mCurrentClass.getCode());
+        StudentAttendanceListFragment fragment = StudentAttendanceListFragment
+                .getInstance(mAdapter.mUnSelectedStudents, mCurrentClass.getCode());
         ((MainActivity) getActivity()).showFragment(fragment, true, StudentAttendanceListFragment.TAG);
     }
 
@@ -234,16 +260,16 @@ public class StudentsListFragment extends ClassTabFragment implements EventsList
                 showDialogFragment();
                 break;
             case R.id.selectAll:
-                mAdapter.setSelectAll();
+                mAdapter.setSelectAll(studentsSet);
                 break;
             case R.id.viewStudentAttendance:
                 mDatePickerDialog.show();
                 break;
             case R.id.deleteStudents:
                 Progress.show(R.string.deleting);
-                for (String code : mAdapter.mSelectedStudents)
+                for (Students student : mAdapter.mSelectedStudents)
                 {
-                    mStudentsDbRef.getRef().child(code).removeValue();
+                    mStudentsDbRef.getRef().child(student.getUserId()).removeValue();
                 }
                 mStudentsDbRef.addValueEventListener(new ValueEventListener()
                 {

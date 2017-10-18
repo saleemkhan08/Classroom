@@ -143,4 +143,16 @@ public abstract class User
             return ref.child(User.STUDENTS).child(userId.substring(0, 3)).child(userId);
         }
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof User && ((User) obj).getUserId().equals(getUserId());
+    }
+
+    @Override
+    public String toString()
+    {
+        return getUserId() + " : " + getFullName();
+    }
 }

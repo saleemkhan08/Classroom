@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.thnki.classroom.R;
+import com.thnki.classroom.utils.NavigationDrawerUtil;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -113,6 +114,16 @@ public class Leaves
         else if ((TextUtils.isEmpty(toDate) || !validateDate(toDate)))
         {
             ToastMsg.show(R.string.pleaseEnterAToValidDate);
+            return false;
+        }
+        else if (TextUtils.isEmpty(approverId))
+        {
+            ToastMsg.show(R.string.please_select_an_approver);
+            return false;
+        }
+        else if (approverId.equals(NavigationDrawerUtil.mCurrentUser.getUserId()))
+        {
+            ToastMsg.show(R.string.you_cannot_select_yourself_as_an_approver);
             return false;
         }
         else

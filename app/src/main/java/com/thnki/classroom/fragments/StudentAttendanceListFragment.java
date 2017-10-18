@@ -36,7 +36,7 @@ import com.thnki.classroom.utils.Otto;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Map;
+import java.util.LinkedHashSet;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -127,12 +127,12 @@ public class StudentAttendanceListFragment extends Fragment implements EventsLis
         Otto.unregister(this);
     }
 
-    public static StudentAttendanceListFragment getInstance(Map<String, Students> studentsMap, String classCode)
+    public static StudentAttendanceListFragment getInstance(LinkedHashSet<Students> studentsSet, String classCode)
     {
         StudentAttendanceListFragment fragment = new StudentAttendanceListFragment();
-        Log.d(TAG, "getInstance : " + studentsMap);
+        Log.d(TAG, "getInstance : " + studentsSet);
         fragment.mStudentsList = new ArrayList<>();
-        fragment.mStudentsList.addAll(studentsMap.values());
+        fragment.mStudentsList.addAll(studentsSet);
         fragment.mClassCode = classCode;
         return fragment;
     }

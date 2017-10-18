@@ -1,6 +1,5 @@
 package com.thnki.classroom.adapters;
 
-import android.app.Activity;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -16,64 +15,55 @@ import com.thnki.classroom.utils.ImageUtil;
 import com.thnki.classroom.utils.Otto;
 import com.thnki.classroom.viewholders.StudentViewHolder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashSet;
 
 import static com.thnki.classroom.utils.ActionBarUtil.SHOW_INDEPENDENT_STUDENTS_MENU;
 
 public class StudentsAdapter extends FirebaseRecyclerAdapter<Students, StudentViewHolder>
 {
     private static final String TAG = "StudentsAdapter";
-    private Activity mActivity;
     public static boolean isSelectionEnabled;
-    public ArrayList<String> mSelectedStudents;
-    public Map<String, Students> mUnSelectedStudents;
-
+    public LinkedHashSet<Students> mSelectedStudents;
+    public LinkedHashSet<Students> mUnSelectedStudents;
     private boolean isSelectAll;
 
-    public static StudentsAdapter getInstance(DatabaseReference reference, Activity activity)
+    public static StudentsAdapter getInstance(DatabaseReference reference)
     {
         Log.d(TAG, "StudentsAdapter getInstance: reference : " + reference);
         return new StudentsAdapter(Students.class,
-                R.layout.student_list_row, StudentViewHolder.class, reference, activity);
+                R.layout.student_list_row, StudentViewHolder.class, reference);
     }
 
     private StudentsAdapter(Class<Students> modelClass, int modelLayout, Class<StudentViewHolder> viewHolderClass,
-                            Query ref, Activity activity)
+                            Query ref)
     {
         super(modelClass, modelLayout, viewHolderClass, ref);
         Log.d(TAG, "StudentsAdapter Constructor");
-        mActivity = activity;
     }
 
     @Override
     protected void populateViewHolder(final StudentViewHolder viewHolder, final Students model, int position)
     {
-        Log.d(TAG, "populateViewHolder : " + position);
         String imageUrl = model.getPhotoUrl();
         ImageUtil.loadCircularImg(viewHolder.itemView.getContext(), imageUrl, viewHolder.mImageView);
 
         viewHolder.mFullName.setText(model.getFullName());
         viewHolder.mUserId.setText(model.getUserId());
-        Log.d(TAG, this + " : isSelectionEnabled : " + isSelectionEnabled);
+
         viewHolder.mCheckBox.setVisibility(isSelectionEnabled ? View.VISIBLE : View.GONE);
-        viewHolder.mCheckBox.setChecked(isSelectAll);
+        if (mSelectedStudents != null)
+        {
+            viewHolder.mCheckBox.setChecked(mSelectedStudents.contains(model));
+        }
+
         viewHolder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked)
             {
-                Log.d(TAG, "onCheckedChanged : " + isChecked);
-                if (isChecked)
+                if (viewHolder.mCheckBox.isShown())
                 {
-                    mSelectedStudents.add(model.getUserId());
-                    mUnSelectedStudents.remove(model.getUserId());
-                }
-                else
-                {
-                    mSelectedStudents.remove(model.getUserId());
-                    mUnSelectedStudents.put(model.getUserId(), model);
+                    updateSelection(isChecked, model);
                 }
             }
         });
@@ -99,11 +89,24 @@ public class StudentsAdapter extends FirebaseRecyclerAdapter<Students, StudentVi
         });
     }
 
+    private void updateSelection(boolean isChecked, Students model)
+    {
+        if (isChecked)
+        {
+            mSelectedStudents.add(model);
+            mUnSelectedStudents.remove(model);
+        }
+        else
+        {
+            mSelectedStudents.remove(model);
+            mUnSelectedStudents.add(model);
+        }
+    }
+
     private void enableSelection()
     {
         isSelectionEnabled = true;
-        mSelectedStudents = new ArrayList<>();
-        mUnSelectedStudents = new HashMap<>();
+        clearSet();
         Otto.register(StudentsAdapter.this);
         notifyDataSetChanged();
     }
@@ -119,17 +122,50 @@ public class StudentsAdapter extends FirebaseRecyclerAdapter<Students, StudentVi
         }
     }
 
-    public void enableAttendance()
+    public void enableAttendance(LinkedHashSet<Students> studentsSet)
     {
-        isSelectAll = true;
         Otto.post(ActionBarUtil.SHOW_ATTENDANCE_MENU);
-        enableSelection();
+        isSelectionEnabled = true;
+        clearSet();
+        mSelectedStudents.addAll(studentsSet);
+        Otto.register(StudentsAdapter.this);
+        notifyDataSetChanged();
 
     }
 
-    public void setSelectAll()
+    public void setSelectAll(LinkedHashSet<Students> studentsSet)
     {
         isSelectAll = !isSelectAll;
+        clearSet();
+        if (isSelectAll)
+        {
+            mSelectedStudents.addAll(studentsSet);
+        }
+        else
+        {
+            mUnSelectedStudents.addAll(studentsSet);
+        }
         notifyDataSetChanged();
+    }
+
+    private void clearSet()
+    {
+        if (mSelectedStudents == null)
+        {
+            mSelectedStudents = new LinkedHashSet<>();
+        }
+        else
+        {
+            mSelectedStudents.clear();
+        }
+
+        if (mUnSelectedStudents == null)
+        {
+            mUnSelectedStudents = new LinkedHashSet<>();
+        }
+        else
+        {
+            mUnSelectedStudents.clear();
+        }
     }
 }

@@ -25,9 +25,7 @@ import com.thnki.classroom.utils.ImageUtil;
 import com.thnki.classroom.utils.Otto;
 import com.thnki.classroom.viewholders.StaffViewHolder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashSet;
 
 import static com.thnki.classroom.utils.ActionBarUtil.SHOW_INDEPENDENT_STAFF_MENU;
 
@@ -37,8 +35,8 @@ public class StaffAdapter extends FirebaseRecyclerAdapter<Staff, StaffViewHolder
     private AppCompatActivity mActivity;
     private DatabaseReference mStaffDbReference;
     public static boolean isSelectionEnabled;
-    private ArrayList<String> mSelectedStaff;
-    public Map<String, Staff> mUnSelectedStaff;
+    private LinkedHashSet<Staff> mSelectedStaff;
+    public LinkedHashSet<Staff> mUnSelectedStaff;
     private boolean isSelectAll;
 
     public static StaffAdapter getInstance(DatabaseReference reference, AppCompatActivity activity)
@@ -76,22 +74,18 @@ public class StaffAdapter extends FirebaseRecyclerAdapter<Staff, StaffViewHolder
             viewHolder.mCheckBox.setVisibility(View.GONE);
             viewHolder.optionsIconContainer.setVisibility(View.VISIBLE);
         }
-        viewHolder.mCheckBox.setChecked(isSelectAll);
+        if (mSelectedStaff != null)
+        {
+            viewHolder.mCheckBox.setChecked(mSelectedStaff.contains(model));
+        }
         viewHolder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked)
             {
-                Log.d(TAG, "onCheckedChanged : " + isChecked);
-                if (isChecked)
+                if (viewHolder.mCheckBox.isShown())
                 {
-                    mSelectedStaff.add(model.getUserId());
-                    mUnSelectedStaff.remove(model.getUserId());
-                }
-                else
-                {
-                    mSelectedStaff.remove(model.getUserId());
-                    mUnSelectedStaff.put(model.getUserId(), model);
+                    updateSelection(isChecked, model);
                 }
             }
         });
@@ -177,11 +171,24 @@ public class StaffAdapter extends FirebaseRecyclerAdapter<Staff, StaffViewHolder
         fragment.show(manager, AddOrEditStaffDialogFragment.TAG);
     }
 
+    private void updateSelection(boolean isChecked, Staff model)
+    {
+        if (isChecked)
+        {
+            mSelectedStaff.add(model);
+            mUnSelectedStaff.remove(model);
+        }
+        else
+        {
+            mSelectedStaff.remove(model);
+            mUnSelectedStaff.add(model);
+        }
+    }
+
     private void enableSelection()
     {
         isSelectionEnabled = true;
-        mSelectedStaff = new ArrayList<>();
-        mUnSelectedStaff = new HashMap<>();
+        clearSet();
         Otto.register(this);
         notifyDataSetChanged();
     }
@@ -197,18 +204,49 @@ public class StaffAdapter extends FirebaseRecyclerAdapter<Staff, StaffViewHolder
         }
     }
 
-    public void enableAttendance()
+    public void enableAttendance(LinkedHashSet<Staff> staffSet)
     {
-        isSelectAll = true;
         Otto.post(ActionBarUtil.SHOW_ATTENDANCE_MENU);
-        enableSelection();
-
-    }
-
-    public void setSelectAll()
-    {
-        isSelectAll = !isSelectAll;
+        isSelectionEnabled = true;
+        clearSet();
+        mSelectedStaff.addAll(staffSet);
+        Otto.register(this);
         notifyDataSetChanged();
     }
 
+    public void setSelectAll(LinkedHashSet<Staff> staffSet)
+    {
+        isSelectAll = !isSelectAll;
+        clearSet();
+        if (isSelectAll)
+        {
+            mSelectedStaff.addAll(staffSet);
+        }
+        else
+        {
+            mUnSelectedStaff.addAll(staffSet);
+        }
+        notifyDataSetChanged();
+    }
+
+    private void clearSet()
+    {
+        if (mSelectedStaff == null)
+        {
+            mSelectedStaff = new LinkedHashSet<>();
+        }
+        else
+        {
+            mSelectedStaff.clear();
+        }
+
+        if (mUnSelectedStaff == null)
+        {
+            mUnSelectedStaff = new LinkedHashSet<>();
+        }
+        else
+        {
+            mUnSelectedStaff.clear();
+        }
+    }
 }

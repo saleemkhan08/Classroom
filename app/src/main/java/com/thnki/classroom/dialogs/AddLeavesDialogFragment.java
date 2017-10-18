@@ -92,7 +92,6 @@ public class AddLeavesDialogFragment extends CustomDialogFragment implements Ada
     public void submit(View view)
     {
         super.submit(view);
-        Progress.show(R.string.submitting);
         final Leaves leave = new Leaves();
         leave.setReason(mReason.getText().toString());
         leave.setFromDate(mFromDate.getText().toString());
@@ -103,9 +102,9 @@ public class AddLeavesDialogFragment extends CustomDialogFragment implements Ada
         leave.requestedLeaveKey(DateTimeUtil.getKey());
         leave.setRequesterId(NavigationDrawerUtil.mCurrentUser.getUserId());
 
-
         if (leave.validate())
         {
+            Progress.show(R.string.submitting);
             DatabaseReference leaveRootRef = FirebaseDatabase.getInstance().getReference().child(Leaves.LEAVES);
             DatabaseReference myLeaveRef = leaveRootRef.child(leave.getRequesterId()).child(Leaves.MY_LEAVES);
             final DatabaseReference requestedLeaveRef = leaveRootRef.child(leave.getApproverId()).child(Leaves.REQUESTED_LEAVES);

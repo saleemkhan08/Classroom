@@ -2,6 +2,8 @@ package com.thnki.classroom.model;
 
 import android.text.TextUtils;
 
+import java.util.Objects;
+
 public class Staff extends User
 {
     public static final String IS_ADMIN = "isAdmin";
@@ -57,5 +59,23 @@ public class Staff extends User
             return ADMIN;
         }
         return STAFF;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof Staff && Objects.equals(getUserId(), ((Staff) obj).getUserId());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hashCode(getUserId());
+    }
+
+    @Override
+    public String toString()
+    {
+        return getUserId();
     }
 }

@@ -27,12 +27,14 @@ import com.thnki.classroom.dialogs.AddOrEditStaffDialogFragment;
 import com.thnki.classroom.dialogs.ViewStaffAttendanceDialogFragment;
 import com.thnki.classroom.listeners.EventsListener;
 import com.thnki.classroom.model.Staff;
+import com.thnki.classroom.model.ToastMsg;
 import com.thnki.classroom.utils.ActionBarUtil;
 import com.thnki.classroom.utils.NavigationDrawerUtil;
 import com.thnki.classroom.utils.Otto;
 import com.thnki.classroom.utils.TransitionUtil;
 
 import java.util.Calendar;
+import java.util.LinkedHashSet;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -64,6 +66,7 @@ public class StaffListFragment extends Fragment implements EventsListener, DateP
     private DatabaseReference mRootRef;
     private StaffAdapter mAdapter;
     private DatePickerDialog mDatePickerDialog;
+    private LinkedHashSet<Staff> staffSet;
 
 
     public StaffListFragment()
@@ -150,10 +153,26 @@ public class StaffListFragment extends Fragment implements EventsListener, DateP
                 if (dataSnapshot.getChildrenCount() <= 0)
                 {
                     mErrorMsg.setVisibility(View.VISIBLE);
+                    if (staffSet == null)
+                    {
+                        staffSet = new LinkedHashSet<>();
+                    }
+                    else
+                    {
+                        staffSet.clear();
+                    }
                 }
                 else
                 {
                     mErrorMsg.setVisibility(View.GONE);
+                    if (staffSet == null)
+                    {
+                        staffSet = new LinkedHashSet<>();
+                    }
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                    {
+                        staffSet.add(snapshot.getValue(Staff.class));
+                    }
                 }
             }
 
@@ -168,9 +187,16 @@ public class StaffListFragment extends Fragment implements EventsListener, DateP
     @OnClick(R.id.attendanceFab)
     public void takeAttendance(View view)
     {
-        mAdapter.enableAttendance();
-        mSaveAttendanceFab.setVisibility(View.VISIBLE);
-        mTakeAttendanceFab.setVisibility(View.GONE);
+        if (staffSet.size() > 0)
+        {
+            mAdapter.enableAttendance(staffSet);
+            mSaveAttendanceFab.setVisibility(View.VISIBLE);
+            mTakeAttendanceFab.setVisibility(View.GONE);
+        }
+        else
+        {
+            ToastMsg.show(R.string.staff_list_is_empty);
+        }
     }
 
     @OnClick(R.id.savefab)
@@ -220,7 +246,7 @@ public class StaffListFragment extends Fragment implements EventsListener, DateP
                 mDatePickerDialog.show();
                 break;
             case R.id.selectAll:
-                mAdapter.setSelectAll();
+                mAdapter.setSelectAll(staffSet);
                 break;
         }
     }
